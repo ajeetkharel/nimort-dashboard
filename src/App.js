@@ -11,6 +11,7 @@ const Content = Layout;
 function App() {
   const dispatch = useDispatch();
   const dashboard = useSelector((state) => state.dashboard.structure)
+  console.log();
   return (
     <div style={{backgroundColor: "#ededed"}}>
       <Content className="top-bar" key={1}>
@@ -20,7 +21,7 @@ function App() {
         </Button>
       </Content>
       <div style={{ height: "800px", margin:"5px" }} key={2}>
-        {(dashboard !== []) ? [dashboard].map(splitter => <Splitter config={splitter}/>): ""}
+        {(dashboard["key"] != undefined) ? [dashboard].map(splitter => <Splitter config={splitter}/>): "Empty dash"}
       </div>
     </div>
   );

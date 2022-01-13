@@ -7,6 +7,7 @@ import {
   ExpandAltOutlined,
 } from "@ant-design/icons/lib/icons";
 import { useDispatch } from "react-redux";
+import { AntList } from "../components/AntList";
 
 function CustomButton(props) {
   const dispatch = useDispatch();
@@ -23,12 +24,10 @@ function CustomButton(props) {
 
 const Splitter = React.memo((props) => {
   var config = props.config;
+
   const color = Math.floor(Math.random() * 16777215).toString(16);
   return (
-    <SplitPane
-      split={config.split}
-      key={config.key}
-    >
+    <SplitPane split={config.split} key={config.key}>
       {config.panes.length > 0
         ? config.panes.map((s) => <Splitter config={s} />)
         : [
@@ -57,7 +56,7 @@ const Splitter = React.memo((props) => {
                   ""
                 )}
               </div>
-              <div></div>
+              <AntList />
             </div>,
           ]}
     </SplitPane>

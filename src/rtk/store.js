@@ -1,9 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit"
-import paneReducer from "./panes/slices";
 import dashboardReducer from "./dashboard/slices"
 
 const reducer = {
-    panes: paneReducer,
     dashboard: dashboardReducer
 }
 
