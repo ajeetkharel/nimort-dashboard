@@ -1,78 +1,74 @@
-import { List, Avatar, Space } from "antd";
-import { MessageOutlined, LikeOutlined, StarOutlined } from "@ant-design/icons";
-import React from "react";
+import { Table, Button } from 'antd';
+import React from 'react';
 
-const listData = [];
-for (let i = 0; i < 23; i++) {
-  listData.push({
-    href: "https://ant.design",
-    title: `ant design part ${i}`,
-    avatar: "https://joeschmoe.io/api/v1/random",
-    description:
-      "Ant Design, a design language for background applications, is refined by Ant UED Team.",
-    content:
-      "We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.",
+const columns = [
+  {
+    title: 'Name',
+    dataIndex: 'name',
+  },
+  {
+    title: 'Age',
+    dataIndex: 'age',
+  },
+  {
+    title: 'Address',
+    dataIndex: 'address',
+  },
+];
+
+const data = [];
+for (let i = 0; i < 46; i++) {
+  data.push({
+    key: i,
+    name: `Edward King ${i}`,
+    age: 32,
+    address: `London, Park Lane no. ${i}`,
   });
 }
 
-const IconText = ({ icon, text }) => (
-  <Space>
-    {React.createElement(icon)}
-    {text}
-  </Space>
-);
+class AntList extends React.Component {
+  state = {
+    selectedRowKeys: [], // Check here to configure the default column
+    loading: false,
+  };
 
-export const AntList = (props) => {
-  return <List
-    itemLayout="vertical"
-    size="large"
-    pagination={{
-      onChange: (page) => {
-        console.log(page);
-      },
-      pageSize: 3,
-    }}
-    dataSource={listData}
-    footer={
+  start = () => {
+    this.setState({ loading: true });
+    // ajax request after empty completing
+    setTimeout(() => {
+      this.setState({
+        selectedRowKeys: [],
+        loading: false,
+      });
+    }, 1000);
+  };
+
+  onSelectChange = selectedRowKeys => {
+    console.log('selectedRowKeys changed: ', selectedRowKeys);
+    this.setState({ selectedRowKeys });
+  };
+
+  render() {
+    const { loading, selectedRowKeys } = this.state;
+    const rowSelection = {
+      selectedRowKeys,
+      onChange: this.onSelectChange,
+    };
+    const hasSelected = selectedRowKeys.length > 0;
+    return (
       <div>
-        <b>ant design</b> footer part
+        <div style={{ marginBottom: 16 }}>
+          <Button type="primary" onClick={this.start} disabled={!hasSelected} loading={loading}>
+            Reload
+          </Button>
+          <span style={{ marginLeft: 8 }}>
+            {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
+          </span>
+        </div>
+        <Table rowSelection={rowSelection} columns={columns} dataSource={data} />
       </div>
-    }
-    renderItem={(item) => (
-      <List.Item
-        key={item.title}
-        actions={[
-          <IconText
-            icon={StarOutlined}
-            text="156"
-            key="list-vertical-star-o"
-          />,
-          <IconText
-            icon={LikeOutlined}
-            text="156"
-            key="list-vertical-like-o"
-          />,
-          <IconText
-            icon={MessageOutlined}
-            text="2"
-            key="list-vertical-message"
-          />,
-        ]}
-        extra={
-          <img
-            width={272}
-            alt="logo"
-            src="https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png"
-          />
-        }
-      >
-        <List.Item.Meta
-          avatar={<Avatar src={item.avatar} />}
-          title={<a href={item.href}>{item.title}</a>}
-          description={item.description}
-        />
-        {item.content}
-      </List.Item>
-    )}
-  />;
+    );
+  }
 }
+
+export default AntList;

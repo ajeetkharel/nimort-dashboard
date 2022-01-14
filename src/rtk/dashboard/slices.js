@@ -100,19 +100,20 @@ function findHighestAreaInSplitter(
         findHighestAreaInSplitter(
           highest,
           highestPane,
-          toSplit,
+          true,
           pane["panes"],
           pane,
           highest_parent
         );
-      toSplit = true;
     } else {
+      if (pane.panes.length == 1) {
+        toSplit = false;
+      }
       var area = getArea(pane);
       if (area > highest) {
         highest = area;
         highestPane = pane;
         highest_parent = parent;
-        toSplit = false;
       }
     }
   });
@@ -136,8 +137,9 @@ function getPaneWithHighestArea(structure) {
 
 function addNewPane(structure) {
   var [pane, toSplit, parent] = getPaneWithHighestArea(structure);
-  console.log(pane, toSplit);
+  console.log(pane);
   console.log(parent);
+  console.log(toSplit);
   if (toSplit) {
     var splitterObj = splitter(
       pane["height"],
@@ -151,19 +153,12 @@ function addNewPane(structure) {
     } else {
       splitterObj = splitVertically(splitterObj);
     }
-    var panes = [...parent["panes"]];
-    var index = panes.indexOf(pane);
-    panes.splice(index, 1, splitterObj);
-
-    parent = {
-      ...parent,
-      panes: panes,
-    };
-    return parent;
+    var index = parent["panes"].indexOf(pane);
+    return [parent, splitterObj, toSplit, index];
   } else if (pane.height > pane.width) {
-    return splitHorizontally(pane);
+    return [splitHorizontally(pane), , toSplit];
   } else {
-    return splitVertically(pane);
+    return [splitVertically(pane), , toSplit];
   }
 }
 
@@ -187,14 +182,16 @@ function replacePanes(parentPane, newPane) {
 function replacePanesMakeEmpty(parentPane, newPane) {
   parentPane.panes.forEach((pane, idx) => {
     var tempPanes;
-    if (pane.panes.length > 0) {
-      pane = replacePanes({ ...pane }, newPane);
+    if (pane.key === newPane.key) {
+      tempPanes = [...parentPane.panes];
+      tempPanes.splice(idx, 1);
+      parentPane.panes = tempPanes;
+    }
+    else if (pane.panes.length > 0) {
+      pane = replacePanesMakeEmpty({ ...pane }, newPane);
       tempPanes = [...parentPane.panes];
       tempPanes[idx] = pane;
       parentPane.panes = tempPanes;
-    }
-    if (pane.key === newPane.key) {
-      parentPane.panes = [];
     }
   });
   return parentPane;
@@ -208,8 +205,14 @@ export const paneSlice = createSlice({
       if (current(state).structure["key"] == undefined) {
         state.structure = splitter(800, 1156);
       } else {
-        var pane = addNewPane(current(state).structure);
-        console.log(pane);
+        var [pane, splitterObj, toSplit, index] = addNewPane(
+          current(state).structure
+        );
+        if (toSplit) {
+          var tempPanes = [...pane["panes"]];
+          tempPanes.splice(index, 1, splitterObj);
+          pane = { ...pane, panes: tempPanes };
+        }
         if (current(state).structure["key"] == pane["key"]) {
           state.structure = pane;
         } else {
@@ -219,9 +222,10 @@ export const paneSlice = createSlice({
       }
     },
     removePane: (state, key) => {
-      // var pane = widget(0, 0, "123", key.payload);
-      // var parentPane = replacePanesMakeEmpty({ ...current(state).structure }, pane);
-      // state.structure = parentPane;
+      console.log("Removing", key.payload);
+      var pane = widget(0, 0, "123", key.payload);
+      var parentPane = replacePanesMakeEmpty({ ...current(state).structure }, pane);
+      state.structure = parentPane;
     },
     maximize: (state, key) => {},
   },
