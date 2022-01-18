@@ -30,7 +30,7 @@ function splitter(
   height,
   width,
   split = "vertical",
-  key = uuidv4(),
+  key = `Splitter ${uuidv4()}`,
   pane = widget(height, width)
 ) {
   return {
@@ -44,7 +44,7 @@ function splitter(
 }
 
 const initialState = {
-  structure: {}
+  structure: {},
 };
 
 function isSplitter(pane) {
@@ -137,9 +137,6 @@ function getPaneWithHighestArea(structure) {
 
 function addNewPane(structure) {
   var [pane, toSplit, parent] = getPaneWithHighestArea(structure);
-  console.log(pane);
-  console.log(parent);
-  console.log(toSplit);
   if (toSplit) {
     var splitterObj = splitter(
       pane["height"],
@@ -182,15 +179,20 @@ function replacePanes(parentPane, newPane) {
 function replacePanesMakeEmpty(parentPane, newPane) {
   parentPane.panes.forEach((pane, idx) => {
     var tempPanes;
+    var comingPane;
     if (pane.key === newPane.key) {
       tempPanes = [...parentPane.panes];
       tempPanes.splice(idx, 1);
       parentPane.panes = tempPanes;
-    }
-    else if (pane.panes.length > 0) {
-      pane = replacePanesMakeEmpty({ ...pane }, newPane);
+    } else if (pane.panes.length > 0) {
+      comingPane = replacePanesMakeEmpty({ ...pane }, newPane);
       tempPanes = [...parentPane.panes];
-      tempPanes[idx] = pane;
+      let index = parentPane.panes.indexOf(pane);
+      if (comingPane.panes.length != 0) {
+        tempPanes[index] = comingPane;
+      } else {
+        tempPanes.splice(index, 1);
+      }
       parentPane.panes = tempPanes;
     }
   });
@@ -222,10 +224,20 @@ export const paneSlice = createSlice({
       }
     },
     removePane: (state, key) => {
-      console.log("Removing", key.payload);
-      var pane = widget(0, 0, "123", key.payload);
-      var parentPane = replacePanesMakeEmpty({ ...current(state).structure }, pane);
-      state.structure = parentPane;
+      var pane = widget(0, 0, "vertical", key.payload);
+      if (pane.key == state.structure.key) {
+        state.structure = initialState;
+      } else {
+        var parentPane = replacePanesMakeEmpty(
+          { ...current(state).structure },
+          pane
+        );
+        if (parentPane.panes.length == 0) {
+          state.structure = {};
+        } else {
+          state.structure = parentPane;
+        }
+      }
     },
     maximize: (state, key) => {},
   },

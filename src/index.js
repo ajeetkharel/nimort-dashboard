@@ -2,8 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
 import store from "./rtk/store";
-import { Provider } from 'react-redux';
-import 'antd/dist/antd.css';
+import { Provider } from "react-redux";
+import "antd/dist/antd.css";
 
 ReactDOM.render(
   <React.StrictMode>
