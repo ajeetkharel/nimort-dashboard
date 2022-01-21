@@ -159,37 +159,6 @@ function addNewPane(structure) {
   }
 }
 
-function findPane(panes, key, need_parent, neededPane, parent, neededParent, idx) {
-  panes.forEach((pane, index) => {
-    if (isSplitter(pane)) {
-      if (need_parent) {
-        [neededPane, neededParent, idx] = findPane(pane["panes"], key, need_parent, neededPane, pane, neededParent, idx);
-      }
-      else{
-        neededPane = findPane(pane["panes"], key, need_parent, neededPane, pane, neededParent, idx);
-      }
-    } else {
-      if (pane["key"] == key) {
-        neededPane = pane;
-        neededParent = parent;
-        idx = index;
-      }
-    }
-  });
-  if (need_parent) {
-    return [neededPane, neededParent, idx]
-  }
-  return neededPane;
-}
-
-function findPaneInDashboard(parentPane, key, need_parent = false) {
-  let pane;
-  let parent;
-  let neededParent;
-  let idx;
-  console.log(`finding ${key}`);
-  return findPane([parentPane], key, need_parent, pane, parent, neededParent, idx); 
-}
 
 function replacePanes(parentPane, newPane) {
   parentPane.panes.forEach((pane, idx) => {
@@ -233,14 +202,21 @@ function replacePanesMakeEmpty(parentPane, newPane, except=-1) {
   return parentPane;
 }
 
-function goDeep(dictlist, value, parent) {
-  for (let i = 0; i < dictlist.length; i++) {
-    if(dictlist[i]["key"] == value) {
-      return [dictlist[i], parent, i];
+function findPaneInDashboard(dictlist, value, parent) {
+  let filteredPanes = dictlist.filter(x => x.key === value)
+  if (filteredPanes.length === 1) {
+      return [filteredPanes[0], parent, dictlist.indexOf(filteredPanes[0])]
+  }
+  for (let pane of dictlist) {
+    if(pane["key"] == value) {
+      return [pane, parent, dictlist.indexOf(pane)];
     }
     
-    if (dictlist[i]["panes"].length > 0) {
-      return goDeep(dictlist[i]["panes"], value, dictlist[i]);
+    if (pane["panes"].length > 0) {
+      pane = findPaneInDashboard(pane["panes"], value, pane);
+      if (pane) {
+        return pane;
+      }
     }
   }
 }
@@ -289,18 +265,20 @@ export const paneSlice = createSlice({
       var panes = data.payload;
       console.log(`Dragged from ${panes[0]} to ${panes[1]}`);
       console.log(panes[0]);
-      // var fromData = goDeep([current(state).structure], panes[0], {});
-      // var toData = goDeep([current(state).structure], panes[1], {});
-      var fromPane = findPaneInDashboard(current(state).structure, panes[0]);
-      var toData = findPaneInDashboard(
-      current(state).structure,
-        panes[1],
-        true
-      );
+      var fromData = findPaneInDashboard([current(state).structure], panes[0], {});
+      var toData = findPaneInDashboard([current(state).structure], panes[1], {});
+      console.log("from",  fromData);
+      console.log("to", toData);
+      // var fromPane = findPaneInDashboard(current(state).structure, panes[0]);
+      // var toData = findPaneInDashboard(
+      // current(state).structure,
+      //   panes[1],
+      //   true
+      // );
 
       // toPane, parent, index
       var toPane = toData[0];
-      // var fromPane = fromData[0];
+      var fromPane = fromData[0];
       var parent = toData[1];
       var index = toData[2];
       var split = "vertical";
