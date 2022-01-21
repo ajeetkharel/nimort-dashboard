@@ -1,18 +1,9 @@
 import { createSlice, current } from "@reduxjs/toolkit";
 
-var empty_dash = {
-  key: "Dashboard",
-  panes: [],
-  split: "horizontal",
-  height: 800,
-  width: 1132,
-  data: "#ffcdd2",
-};
-
-let count = 1;
+let currentKeyCount = 1;
 
 function uuidv4() {
-  return count++;
+  return currentKeyCount++;
 }
 
 function widget(height, width, split = "vertical", key = uuidv4()) {

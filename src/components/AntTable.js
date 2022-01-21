@@ -26,7 +26,7 @@ for (let i = 0; i < 46; i++) {
   });
 }
 
-class AntList extends React.Component {
+class AntTable extends React.Component {
   state = {
     selectedRowKeys: [], // Check here to configure the default column
     loading: false,
@@ -71,4 +71,4 @@ class AntList extends React.Component {
   }
 }
 
-export default AntList;
+export default AntTable;
