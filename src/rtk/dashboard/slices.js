@@ -31,12 +31,12 @@ function splitter(
   width,
   split = "vertical",
   key = `Splitter ${uuidv4()}`,
-  pane = widget(height, width)
+  pane = [widget(height, width)]
 ) {
   return {
     key: key,
     split: split,
-    panes: [pane],
+    panes: [...pane],
     height: height,
     width: width,
     data: "#ffcdd2",
@@ -143,7 +143,7 @@ function addNewPane(structure) {
       pane["width"],
       pane["split"],
       `Splitter ${uuidv4()}`,
-      pane
+      [pane]
     );
     if (splitterObj.height > splitterObj.width) {
       splitterObj = splitHorizontally(splitterObj);
@@ -157,6 +157,38 @@ function addNewPane(structure) {
   } else {
     return [splitVertically(pane), , toSplit];
   }
+}
+
+function findPane(panes, key, need_parent, neededPane, parent, neededParent, idx) {
+  panes.forEach((pane, index) => {
+    if (isSplitter(pane)) {
+      if (need_parent) {
+        [neededPane, neededParent, idx] = findPane(pane["panes"], key, need_parent, neededPane, pane, neededParent, idx);
+      }
+      else{
+        neededPane = findPane(pane["panes"], key, need_parent, neededPane, pane, neededParent, idx);
+      }
+    } else {
+      if (pane["key"] == key) {
+        neededPane = pane;
+        neededParent = parent;
+        idx = index;
+      }
+    }
+  });
+  if (need_parent) {
+    return [neededPane, neededParent, idx]
+  }
+  return neededPane;
+}
+
+function findPaneInDashboard(parentPane, key, need_parent = false) {
+  let pane;
+  let parent;
+  let neededParent;
+  let idx;
+  console.log(`finding ${key}`);
+  return findPane([parentPane], key, need_parent, pane, parent, neededParent, idx); 
 }
 
 function replacePanes(parentPane, newPane) {
@@ -176,16 +208,18 @@ function replacePanes(parentPane, newPane) {
   return parentPane;
 }
 
-function replacePanesMakeEmpty(parentPane, newPane) {
+function replacePanesMakeEmpty(parentPane, newPane, except=-1) {
   parentPane.panes.forEach((pane, idx) => {
     var tempPanes;
     var comingPane;
     if (pane.key === newPane.key) {
-      tempPanes = [...parentPane.panes];
-      tempPanes.splice(idx, 1);
-      parentPane.panes = tempPanes;
+      if (parentPane.key != except){
+        tempPanes = [...parentPane.panes];
+        tempPanes.splice(idx, 1);
+        parentPane.panes = tempPanes;
+      }
     } else if (pane.panes.length > 0) {
-      comingPane = replacePanesMakeEmpty({ ...pane }, newPane);
+      comingPane = replacePanesMakeEmpty({ ...pane }, newPane, except);
       tempPanes = [...parentPane.panes];
       let index = parentPane.panes.indexOf(pane);
       if (comingPane.panes.length != 0) {
@@ -197,6 +231,18 @@ function replacePanesMakeEmpty(parentPane, newPane) {
     }
   });
   return parentPane;
+}
+
+function goDeep(dictlist, value, parent) {
+  for (let i = 0; i < dictlist.length; i++) {
+    if(dictlist[i]["key"] == value) {
+      return [dictlist[i], parent, i];
+    }
+    
+    if (dictlist[i]["panes"].length > 0) {
+      return goDeep(dictlist[i]["panes"], value, dictlist[i]);
+    }
+  }
 }
 
 export const paneSlice = createSlice({
@@ -239,11 +285,68 @@ export const paneSlice = createSlice({
         }
       }
     },
+    draggedInto: (state, data) => {
+      var panes = data.payload;
+      console.log(`Dragged from ${panes[0]} to ${panes[1]}`);
+      console.log(panes[0]);
+      // var fromData = goDeep([current(state).structure], panes[0], {});
+      // var toData = goDeep([current(state).structure], panes[1], {});
+      var fromPane = findPaneInDashboard(current(state).structure, panes[0]);
+      var toData = findPaneInDashboard(
+      current(state).structure,
+        panes[1],
+        true
+      );
+
+      // toPane, parent, index
+      var toPane = toData[0];
+      // var fromPane = fromData[0];
+      var parent = toData[1];
+      var index = toData[2];
+      var split = "vertical";
+      if (toPane["height"] > toPane["width"]) {
+        split = "horizontal";
+      }
+      var splitterObj = splitter(
+        toPane["height"],
+        toPane["width"],
+        split,
+        `Splitter ${uuidv4()}`,
+        [toPane, fromPane]
+      );
+
+      var tempPanes = [...parent["panes"]];
+      tempPanes.splice(index, 1, splitterObj);
+      parent = { ...parent, panes: tempPanes };
+
+      if (current(state).structure["key"] == parent["key"]) {
+        state.structure = parent;
+      } else {
+        var parentPane = replacePanes({ ...current(state).structure }, parent);
+        state.structure = parentPane;
+      }
+
+      var pane = widget(0, 0, "vertical", panes[0]);
+      if (pane.key == state.structure.key) {
+        state.structure = initialState;
+      } else {
+        var parentPane = replacePanesMakeEmpty(
+          { ...current(state).structure },
+          pane,
+          splitterObj.key
+        );
+        if (parentPane.panes.length == 0) {
+          state.structure = {};
+        } else {
+          state.structure = parentPane;
+        }
+      }
+    },
     maximize: (state, key) => {},
   },
 });
 
 const { reducer } = paneSlice;
-export const { addWidget, removePane } = paneSlice.actions;
+export const { addWidget, removePane, draggedInto } = paneSlice.actions;
 
 export default reducer;

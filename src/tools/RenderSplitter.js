@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useRef } from "react";
 import SplitPane from "react-split-pane";
-import { removePane } from "../rtk/dashboard/slices";
+import { removePane, draggedInto } from "../rtk/dashboard/slices";
 import { Button } from "antd";
 import {
   CloseCircleFilled,
@@ -25,16 +25,17 @@ function CloseButton(props) {
   );
 }
 
-const PaneWidget = React.memo((props) => {
+const PaneWidget = (props) => {
   const dispatch = useDispatch();
   var config = props.config;
+  const ref = useRef(null);
   const [{ isDragging }, drag, preview] = useDrag(() => ({
     type: "SplitPane",
     item: { config },
     end: (item, monitor) => {
       const dropResult = monitor.getDropResult();
       if (dropResult !== null) {
-        dispatch(draggedInto(item.config.key, dropResult.key))
+        dispatch(draggedInto([config.key, dropResult.key]))
       }
     },
     collect: (monitor) => ({
@@ -44,6 +45,9 @@ const PaneWidget = React.memo((props) => {
   }));
   const [{ canDrop, isOver }, drop] = useDrop(() => ({
     accept: "SplitPane",
+    // hover(item, monitor) {
+    //   console.log(item);
+    // },
     drop: () => ({ key: config.key }),
     collect: (monitor) => ({
       isOver: monitor.isOver(),
@@ -58,15 +62,15 @@ const PaneWidget = React.memo((props) => {
     backgroundColor = "darkkhaki";
   }
   const opacity = isDragging ? 0.9 : 1;
+  preview(drop(ref));
   return (
-    <div id={config.key} ref={drop}>
       <div
         style={{
           width: `100%`,
           height: `100%`,
         }}
         key={config.key}
-        ref={preview}
+        ref={ref}
         role={"SplitPane"}
         style={{ opacity, backgroundColor }}
         data-testid={`box-${config.key}`}
@@ -80,15 +84,17 @@ const PaneWidget = React.memo((props) => {
                 type="text"
                 size="small"
                 primary="true"
+                key={`DragButtonFor${config.key}`}
                 ref={drag}
               ></Button>
               <Button
                 icon={<ExpandAltOutlined />}
                 type="text"
                 size="small"
+                key={`ExpandButtonFor${config.key}`}
                 primary="true"
               ></Button>
-              <CloseButton config={config} />
+              <CloseButton key={`CloseButtonFor${config.key}`}  config={config} />
             </div>
           ) : (
             ""
@@ -96,9 +102,8 @@ const PaneWidget = React.memo((props) => {
         </div>
         <AntList />
       </div>
-    </div>
   );
-});
+}
 
 const Splitter = React.memo((props) => {
   var config = props.config;
