@@ -1,23 +1,22 @@
-import { draggedInto } from "../../rtk/dashboard/slices";
-import { useDispatch } from "react-redux";
 import AntTable from "../AntTable";
+import { CloseButton, DragButton, MaximizeButton } from "./CustomButtons";
+import React, { useRef } from "react";
+import { draggedInto } from "../../rtk/dashboard/slices";
 import { useDrag } from "react-dnd";
 import { useDrop } from "react-dnd";
-import { CloseButton, DragButton, MaximizeButton } from "./CustomButtons";
-import { useRef } from "react";
+import { useDispatch } from "react-redux";
 
-const CustomPane = (props) => {
+const CustomPane = React.memo((props) => {
     let config = props.config;
     const dispatch = useDispatch();
-    const ref = useRef(null);
-    
+
     const [{ isDragging }, drag, preview] = useDrag(() => ({
         type: "SplitPane",
         item: { config },
         end: (item, monitor) => {
             const dropResult = monitor.getDropResult();
-            if (dropResult !== null) {
-                dispatch(draggedInto([item.config.key, dropResult.key]));
+            if ((dropResult !== null) && (dropResult.key !== item.config.key)) {
+                dispatch(draggedInto({ "from": item.config.key, "to": dropResult.key, "direction": "right" }));
             }
         },
         collect: (monitor) => ({
@@ -28,16 +27,17 @@ const CustomPane = (props) => {
 
     const [{ canDrop, isOver }, drop] = useDrop(() => ({
         accept: "SplitPane",
-        // hover(item, monitor) {
-        //   console.log(item);
-        // },
         drop: () => ({ key: config.key }),
+        hover: (item, monitor) => {
+            console.log(item);
+            console.log(config);
+        },
         collect: (monitor) => ({
             isOver: monitor.isOver(),
             canDrop: monitor.canDrop(),
         }),
     }));
-    preview(drop(ref));
+
 
     const isActive = canDrop && isOver;
     let backgroundColor = "#fff";
@@ -47,6 +47,10 @@ const CustomPane = (props) => {
         backgroundColor = "darkkhaki";
     }
     const opacity = isDragging ? 0.9 : 1;
+
+    const ref = useRef(null);
+    drop(preview(ref));
+
     return (
         <div
             style={{
@@ -59,21 +63,23 @@ const CustomPane = (props) => {
             style={{ opacity, backgroundColor }}
             data-testid={`box-${config.key}`}
         >
-            <div className="title-bar">
-                <div className="file-name">{config.key}</div>
-                {config.key !== "Reports" ? (
-                    <div className="actions">
-                        <DragButton pane_key={config.key} drag={drag} />
-                        <MaximizeButton pane_key={config.key} />
-                        <CloseButton pane_key={config.key} />
-                    </div>
-                ) : (
-                    ""
-                )}
+            <div>
+                <div className="title-bar">
+                    <div className="file-name">{config.key}</div>
+                    {config.key !== "Reports" ? (
+                        <div className="actions">
+                            <DragButton pane_key={config.key} drag={drag} />
+                            <MaximizeButton pane_key={config.key} />
+                            <CloseButton pane_key={config.key} />
+                        </div>
+                    ) : (
+                        ""
+                    )}
+                </div>
             </div>
             <AntTable />
         </div>
     );
-};
+});
 
 export default CustomPane;

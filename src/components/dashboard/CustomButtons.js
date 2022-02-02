@@ -5,7 +5,7 @@ import {
   ExpandAltOutlined,
 } from "@ant-design/icons/lib/icons";
 import { useDispatch } from "react-redux";
-import { removePane } from "../../rtk/dashboard/slices";
+import { removeFigure } from "../../rtk/dashboard/slices";
 
 export const CloseButton = (props) => {
   const dispatch = useDispatch();
@@ -14,7 +14,7 @@ export const CloseButton = (props) => {
       icon={<CloseCircleFilled />}
       type="text"
       size="small"
-      onClick={() => dispatch(removePane(props.pane_key))}
+      onClick={() => dispatch(removeFigure(props.pane_key))}
       danger="true"
     ></Button>
   );
@@ -28,6 +28,7 @@ export const DragButton = (props) => {
       size="small"
       primary="true"
       key={`DragButtonFor${props.pane_key}`}
+      id={`DragFor${props.pane_key}`}
       ref={props.drag}
     ></Button>
   );

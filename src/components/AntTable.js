@@ -57,7 +57,7 @@ class AntTable extends React.Component {
     const hasSelected = selectedRowKeys.length > 0;
     return (
       <div>
-        <div style={{ marginBottom: 16 }}>
+        <div style={{ marginBottom: 16, height: "100%", width: "100%" }}>
           <Button type="primary" onClick={this.start} disabled={!hasSelected} loading={loading}>
             Reload
           </Button>
