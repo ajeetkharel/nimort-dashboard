@@ -16,7 +16,7 @@ const CustomPane = React.memo((props) => {
         end: (item, monitor) => {
             const dropResult = monitor.getDropResult();
             if ((dropResult !== null) && (dropResult.key !== item.config.key)) {
-                dispatch(draggedInto({ "from": item.config.key, "to": dropResult.key, "direction": "right" }));
+                dispatch(draggedInto({ "from": item.config.key, "to": dropResult.key, "direction": "bottom" }));
             }
         },
         collect: (monitor) => ({
@@ -53,14 +53,11 @@ const CustomPane = React.memo((props) => {
 
     return (
         <div
-            style={{
-                width: `100%`,
-                height: `100%`,
-            }}
             key={config.key}
             ref={ref}
+            id={config.key}
             role={"SplitPane"}
-            style={{ opacity, backgroundColor }}
+            style={{ opacity, backgroundColor, height: "100%", width: "100%" }}
             data-testid={`box-${config.key}`}
         >
             <div>
@@ -77,7 +74,7 @@ const CustomPane = React.memo((props) => {
                     )}
                 </div>
             </div>
-            <AntTable />
+            <div><AntTable data={config.data}/></div>
         </div>
     );
 });

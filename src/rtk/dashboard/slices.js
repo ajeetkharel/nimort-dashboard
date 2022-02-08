@@ -5,7 +5,7 @@ import { removeFigureFromDashboard, replacePanesMakeEmpty } from "../../utils/da
 import { generateSplitter, generateWidget } from "../../utils/tools/widget_generator";
 
 const initialState = {
-  tree: { },
+  tree: {}, 
 };
 
 let HORIZONTAL = ['top', 'bottom'];

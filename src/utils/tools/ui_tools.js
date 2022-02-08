@@ -1,14 +1,17 @@
 import { generateWidget } from "./widget_generator";
 
 export function getArea(pane) {
-    var height = pane["height"];
-    var width = pane["width"];
+    let element = document.getElementById(pane["key"]) || document.getElementById(pane.panes[0]["key"])
+    var height = element.clientHeight;
+    var width = element.clientWidth;
+    console.log("Area", pane["key"], height, width);
     return height * width;
 }
 
 export function splitVertically(pane) {
-    var height = pane["height"];
-    var width = pane["width"];
+    let element = document.getElementById(pane["key"]) || document.getElementById(pane.panes[0]["key"])
+    var height = element.clientHeight;
+    var width = element.clientWidth;
     var newWidth = ~~(width / 2);
 
     var childPane = generateWidget(height, newWidth);
@@ -20,8 +23,9 @@ export function splitVertically(pane) {
 }
 
 export function splitHorizontally(pane) {
-    var width = pane["width"];
-    var height = pane["height"];
+    let element = document.getElementById(pane["key"]) || document.getElementById(pane.panes[0]["key"])
+    var height = element.clientHeight;
+    var width = element.clientWidth;
     var newHeight = ~~(height / 2);
 
     var childPane = generateWidget(newHeight, width);

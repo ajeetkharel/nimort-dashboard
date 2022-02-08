@@ -33,10 +33,15 @@ export function isEmptyDashboard(tree) {
 
 function addNewPane(tree) {
     var [pane, toSplit, parent] = getPaneWithHighestArea(tree);
+    console.log("Highest", pane);
+    console.log("Highest Parent", parent);
+    let element = document.getElementById(pane["key"]) || document.getElementById(pane.panes[0]["key"])
+    var height = element.clientHeight;
+    var width = element.clientWidth;
     if (toSplit) {
         var splitterObj = generateSplitter(
-            pane["height"],
-            pane["width"],
+            height,
+            width,
             pane["split"],
             [pane]
         );
@@ -47,7 +52,7 @@ function addNewPane(tree) {
         }
         var index = parent["panes"].indexOf(pane);
         return [parent, splitterObj, toSplit, index];
-    } else if (pane.height > pane.width) {
+    } else if (height > width) {
         return [splitHorizontally(pane), , toSplit];
     } else {
         return [splitVertically(pane), , toSplit];

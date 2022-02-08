@@ -5,7 +5,6 @@ import "./App.css";
 import Dashboard from "./components/dashboard/Dashboard";
 
 const Content = Layout;
-
 function App() {
   const dispatch = useDispatch();
   const tree = useSelector((state) => state.dashboard.tree);
