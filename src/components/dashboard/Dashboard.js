@@ -5,13 +5,14 @@ import Splitter from "./Splitter";
 
 export const Dashboard = React.memo((props) => {
   let tree = props.tree;
-  return (
+  let dashboard = (
     <DndProvider backend={HTML5Backend}>
       {tree["key"] !== undefined
         ? [tree].map((splitter) => <Splitter config={splitter} />)
         : "Empty dash"}
     </DndProvider>
-  )
+  );
+  return dashboard
 });
 
 export default Dashboard;

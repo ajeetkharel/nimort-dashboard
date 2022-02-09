@@ -74,7 +74,6 @@ const CustomPane = React.memo((props) => {
                     )}
                 </div>
             </div>
-            <div><AntTable data={config.data}/></div>
         </div>
     );
 });

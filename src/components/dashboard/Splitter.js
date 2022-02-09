@@ -1,6 +1,8 @@
 import React from "react";
 import SplitPane from "react-split-pane";
 import CustomPane from "./CustomPane";
+import Pane from "react-split-pane/lib/Pane";
+
 
 const Splitter = React.memo((props) => {
   let config = props.config;
@@ -8,13 +10,13 @@ const Splitter = React.memo((props) => {
   return (
     <SplitPane
       split={config.split}
-      defaultSize="50%"
+      size={config.size}
+      minSize="20%"
     >
       {
         (config.panes.length > 0) ?
           config.panes.map((s) => <Splitter config={s} />)
-          :
-          <CustomPane config={config} />
+          : <CustomPane config={config} />
       }
     </SplitPane>
   );

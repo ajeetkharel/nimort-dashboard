@@ -1,13 +1,20 @@
-import { Button, Layout } from "antd";
+import { Button, Layout, Tabs } from "antd";
 import { useSelector, useDispatch } from "react-redux";
 import { addFigure } from "./rtk/dashboard/slices";
 import "./App.css";
 import Dashboard from "./components/dashboard/Dashboard";
 
 const Content = Layout;
+const { TabPane } = Tabs;
+
 function App() {
   const dispatch = useDispatch();
   const tree = useSelector((state) => state.dashboard.tree);
+
+  function tabChanged(key) {
+    console.log(key);
+  }
+
   return (
     <div style={{ backgroundColor: "#ededed" }}>
       <Content className="top-bar" key={1}>

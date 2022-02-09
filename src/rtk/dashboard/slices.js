@@ -1,11 +1,25 @@
 import { createSlice, current } from "@reduxjs/toolkit";
-import { addFigureInDashboard, replacePaneInTree } from "../../utils/dashboard_actions/add_figure";
-import { findPaneInDashboard } from "../../utils/dashboard_actions/drag_figure";
-import { removeFigureFromDashboard, replacePanesMakeEmpty } from "../../utils/dashboard_actions/remove_figure";
-import { generateSplitter, generateWidget } from "../../utils/tools/widget_generator";
+import { addFigureInDashboard, replacePaneInTree } from "../../components/dashboard/utils/dashboard_actions/add_figure";
+import { findPaneInDashboard } from "../../components/dashboard/utils/dashboard_actions/drag_figure";
+import { removeFigureFromDashboard, replacePanesMakeEmpty } from "../../components/dashboard/utils/dashboard_actions/remove_figure";
+import { generateSplitter, generateWidget } from "../../components/dashboard/utils/tools/widget_generator";
 
 const initialState = {
-  tree: {}, 
+  tree: {
+    key: '6ab57c54-c792-4d71-3810-b612bf002938',
+    split: 'vertical',
+    panes: [
+      {
+        key: '3143cdf8-2789-4341-24d1-f600530ed20b',
+        split: 'vertical',
+        panes: [],
+        size: "50%",
+        data: '#ffcdd2'
+      }
+    ],
+    size: "100%",
+    data: '#ffcdd2'
+  },
 };
 
 let HORIZONTAL = ['top', 'bottom'];
