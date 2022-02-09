@@ -1,4 +1,4 @@
-import AntTable from "../AntTable";
+import AntTable from "./AntTable";
 import { CloseButton, DragButton, MaximizeButton } from "./CustomButtons";
 import React, { useRef } from "react";
 import { draggedInto } from "../../rtk/dashboard/slices";
