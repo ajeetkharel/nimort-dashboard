@@ -58,7 +58,6 @@ const CustomPane = React.memo((props) => {
             id={config.key}
             role={"SplitPane"}
             style={{ opacity, backgroundColor, height: "100%", width: "100%" }}
-            data-testid={`box-${config.key}`}
         >
             <div>
                 <div className="title-bar">
@@ -74,6 +73,7 @@ const CustomPane = React.memo((props) => {
                     )}
                 </div>
             </div>
+            <div><AntTable /></div>
         </div>
     );
 });

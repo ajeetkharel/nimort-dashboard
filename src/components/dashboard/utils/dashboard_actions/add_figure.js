@@ -6,7 +6,7 @@ import { generateSplitter } from "../tools/widget_generator";
 export function addFigureInDashboard(tree) {
     let treeStructure;
     if (isEmptyDashboard(tree)) {
-        treeStructure = generateSplitter(800, 1156);
+        treeStructure = generateSplitter(100);
     }
     else {
         var [pane, splitterObj, toSplit, index] = addNewPane(
@@ -33,19 +33,17 @@ export function isEmptyDashboard(tree) {
 
 function addNewPane(tree) {
     var [pane, toSplit, parent] = getPaneWithHighestArea(tree);
-    console.log("Highest", pane);
-    console.log("Highest Parent", parent);
     let element = document.getElementById(pane["key"]) || document.getElementById(pane.panes[0]["key"])
     var height = element.clientHeight;
     var width = element.clientWidth;
     if (toSplit) {
         var splitterObj = generateSplitter(
-            height,
-            width,
+            100,
+            pane["size"],
             pane["split"],
             [pane]
         );
-        if (splitterObj.height > splitterObj.width) {
+        if (height > width) {
             splitterObj = splitHorizontally(splitterObj);
         } else {
             splitterObj = splitVertically(splitterObj);

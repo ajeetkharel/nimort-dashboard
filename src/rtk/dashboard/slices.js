@@ -5,21 +5,7 @@ import { removeFigureFromDashboard, replacePanesMakeEmpty } from "../../componen
 import { generateSplitter, generateWidget } from "../../components/dashboard/utils/tools/widget_generator";
 
 const initialState = {
-  tree: {
-    key: '6ab57c54-c792-4d71-3810-b612bf002938',
-    split: 'vertical',
-    panes: [
-      {
-        key: '3143cdf8-2789-4341-24d1-f600530ed20b',
-        split: 'vertical',
-        panes: [],
-        size: "50%",
-        data: '#ffcdd2'
-      }
-    ],
-    size: "100%",
-    data: '#ffcdd2'
-  },
+  tree: {},
 };
 
 let HORIZONTAL = ['top', 'bottom'];
@@ -64,10 +50,9 @@ export const paneSlice = createSlice({
       }
 
       var splitterObj = generateSplitter(
-        toPane["height"],
-        toPane["width"],
         split,
-        panes
+        panes,
+        toPane["size"]
       );
 
       var tempPanes = [...parent["panes"]];
@@ -81,7 +66,7 @@ export const paneSlice = createSlice({
         state.tree = parentPane;
       }
 
-      var pane = generateWidget(0, 0, "vertical", drag_data.from);
+      var pane = generateWidget(0, "vertical", drag_data.from);
       if (pane.key == state.tree.key) {
         state.tree = initialState;
       } else {

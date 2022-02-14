@@ -3,18 +3,18 @@ import { generateWidget } from "../tools/widget_generator";
 
 export function removeFigureFromDashboard(tree, key) {
     let treeStructure;
-    var pane = generateWidget(0, 0, "vertical", key.payload);
+    var pane = generateWidget(0, "vertical", key.payload);
     if (pane.key == tree.key) {
-        treeStructure= {};
+        treeStructure = {};
     } else {
         var parentPane = replacePanesMakeEmpty(
             { ...tree },
             pane
         );
         if (parentPane.panes.length === 0) {
-            treeStructure= {};
+            treeStructure = {};
         } else {
-            treeStructure= parentPane;
+            treeStructure = parentPane;
         }
     }
     return treeStructure;
@@ -23,12 +23,23 @@ export function removeFigureFromDashboard(tree, key) {
 export function replacePanesMakeEmpty(parentPane, newPane, except = -1) {
     parentPane.panes.forEach((pane, idx) => {
         var tempPanes;
+        var tempPane;
         var comingPane;
+        let tempSize;
         if (pane.key == newPane.key) {
             if (parentPane.key != except) {
                 tempPanes = [...parentPane.panes];
+                tempSize = window.localStorage.getItem("SizeOf"+tempPanes[idx]["key"]);
                 tempPanes.splice(idx, 1);
-                parentPane.panes = tempPanes;
+                if (tempPanes.length > 0) {
+                    tempPane = {...tempPanes[0]};
+                    tempPane["size"] = window.localStorage.getItem("SizeOf"+tempPane["key"]) + tempSize;
+                    window.localStorage.setItem("SizeOf"+tempPane["key"], tempPane["size"])
+                    parentPane.panes = [tempPane]
+                }
+                else {
+                    parentPane.panes = [];
+                }
             }
         } else if (pane.panes.length > 0) {
             comingPane = replacePanesMakeEmpty({ ...pane }, newPane, except);
@@ -36,10 +47,20 @@ export function replacePanesMakeEmpty(parentPane, newPane, except = -1) {
             let index = parentPane.panes.indexOf(pane);
             if (comingPane.panes.length != 0) {
                 tempPanes[index] = comingPane;
+                parentPane.panes = tempPanes;
             } else {
+                tempSize = window.localStorage.getItem("SizeOf"+tempPanes[index]["key"]);
                 tempPanes.splice(index, 1);
+                if (tempPanes.length > 0) {
+                    tempPane = {...tempPanes[0]};
+                    tempPane["size"] = window.localStorage.getItem("SizeOf"+tempPane["key"]) + tempSize;
+                    window.localStorage.setItem("SizeOf"+tempPane["key"], tempPane["size"])
+                    parentPane.panes = [tempPane]
+                }
+                else {
+                    parentPane.panes = [];
+                }
             }
-            parentPane.panes = tempPanes;
         }
     });
     return parentPane;

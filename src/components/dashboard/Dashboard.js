@@ -8,7 +8,9 @@ export const Dashboard = React.memo((props) => {
   let dashboard = (
     <DndProvider backend={HTML5Backend}>
       {tree["key"] !== undefined
-        ? [tree].map((splitter) => <Splitter config={splitter} />)
+        ? [tree].map((splitter) => {
+          return <Splitter config={splitter} />
+        })
         : "Empty dash"}
     </DndProvider>
   );

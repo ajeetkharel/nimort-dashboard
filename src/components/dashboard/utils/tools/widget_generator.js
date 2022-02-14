@@ -6,29 +6,27 @@ function uuidv4() {
   );
 }
 
-export function generateWidget(height, width, split = "vertical", key = uuidv4()) {
+export function generateWidget(size=100, split = "vertical", key = uuidv4()) {
   return {
     key: key,
     split: split,
     panes: [],
-    height: height,
-    width: width,
+    size: size,
     data: "#ffcdd2",
   };
 }
 
 export function generateSplitter(
-  height,
-  width,
+  widgetSize,
+  size=100,
   split = "vertical",
-  panes = [generateWidget(height, width)]
+  panes = [generateWidget(widgetSize)]
 ) {
   return {
     key: uuidv4(),
     split: split,
     panes: [...panes],
-    height: height,
-    width: width,
+    size: size,
     data: "#ffcdd2",
   };
 }
