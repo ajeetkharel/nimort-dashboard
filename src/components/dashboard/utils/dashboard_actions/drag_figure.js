@@ -85,3 +85,51 @@ function removePreviousChildren(key, tree, treeStructure, except) {
   }
   return treeStructure;
 }
+
+export function replacePanesMakeEmptyForDrag(parentPane, newPane, except = -1) {
+  parentPane.panes.forEach((pane, idx) => {
+    var tempPanes;
+    var comingPane;
+    if (pane.key == newPane.key) {
+      if (parentPane.key != except) {
+        tempPanes = [...parentPane.panes];
+        tempPanes.splice(idx, 1);
+        parentPane.panes = tempPanes;
+      }
+    } else if (pane.panes.length > 0) {
+      comingPane = replacePanesMakeEmpty({ ...pane }, newPane, except);
+      tempPanes = [...parentPane.panes];
+      let index = parentPane.panes.indexOf(pane);
+      if (comingPane.panes.length != 0) {
+        tempPanes[index] = comingPane;
+      } else {
+        tempPanes.splice(index, 1);
+      }
+      parentPane.panes = tempPanes;
+    }
+  });
+  return parentPane;
+}
+
+export function removeLoneParents(parentPane) {
+  parentPane.panes.forEach((pane) => {
+    var tempPanes;
+    let tempPane;
+    let comingPane;
+    if (pane.panes.length == 1) {
+      let savedSize = Math.round(window.localStorage.getItem("SizeOf"+pane["key"]));
+      tempPane = {...pane.panes[0], size: savedSize || pane["size"]};
+      tempPanes = [...parentPane.panes];
+      let index = parentPane.panes.indexOf(pane);
+      tempPanes.splice(index, 1, tempPane);
+      parentPane.panes = tempPanes;
+    } else if (pane.panes.length == 2) {
+      comingPane = removeLoneParents({ ...pane });
+      tempPanes = [...parentPane.panes];
+      let index = parentPane.panes.indexOf(pane);
+      tempPanes.splice(index, 1, comingPane);
+      parentPane.panes = tempPanes;
+    }
+  });
+  return parentPane;
+}

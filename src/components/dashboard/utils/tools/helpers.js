@@ -1,4 +1,5 @@
 import { getArea } from "./ui_tools";
+import { uuidv4 } from "./widget_generator";
 
 export function isSplitter(pane) {
   if (pane["panes"].length == 2) {
@@ -54,4 +55,43 @@ export function getPaneWithHighestArea(structure) {
     structure
   );
   return [details[1], details[2], details[4]];
+}
+
+export function exportToJsonFile(jsonData) {
+  let dataStr = JSON.stringify(jsonData);
+  let dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+
+  let exportFileDefaultName = 'data.json';
+
+  let linkElement = document.createElement('a');
+  linkElement.setAttribute('href', dataUri);
+  linkElement.setAttribute('download', exportFileDefaultName);
+  linkElement.click();
+}
+
+export function setSavedSizeOfPanes(parent) {
+  parent.panes.forEach((pane, idx) => {
+    if (isSplitter(pane)) {
+      let comingPane = setSavedSizeOfPanes({...pane});
+      let savedSize = Math.round(window.localStorage.getItem("SizeOf"+comingPane["key"]));
+      console.log("Saved size", savedSize);
+      let tempPane = {...comingPane};
+      tempPane["size"] = savedSize || comingPane["size"];
+      tempPane["key"] = uuidv4();
+      let tempPanes = [...parent.panes];
+      tempPanes[idx] = tempPane;
+      parent.panes = tempPanes;
+    }
+    else {
+      let savedSize = Math.round(window.localStorage.getItem("SizeOf"+pane["key"]));
+      let tempPane = {...pane};
+      console.log("Saved size", savedSize);
+      tempPane["size"] = savedSize || pane["size"];
+      tempPane["key"] = uuidv4();
+      let tempPanes = [...parent.panes];
+      tempPanes[idx] = tempPane;
+      parent.panes = tempPanes;
+    }
+  });
+  return parent;
 }

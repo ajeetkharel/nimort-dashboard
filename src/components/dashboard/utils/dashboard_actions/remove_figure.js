@@ -29,11 +29,11 @@ export function replacePanesMakeEmpty(parentPane, newPane, except = -1) {
         if (pane.key == newPane.key) {
             if (parentPane.key != except) {
                 tempPanes = [...parentPane.panes];
-                tempSize = window.localStorage.getItem("SizeOf"+tempPanes[idx]["key"]);
+                tempSize = Math.round(window.localStorage.getItem("SizeOf"+tempPanes[idx]["key"]));
                 tempPanes.splice(idx, 1);
                 if (tempPanes.length > 0) {
                     tempPane = {...tempPanes[0]};
-                    tempPane["size"] = window.localStorage.getItem("SizeOf"+tempPane["key"]) + tempSize;
+                    tempPane["size"] = Math.round(window.localStorage.getItem("SizeOf"+tempPane["key"])) + tempSize;
                     window.localStorage.setItem("SizeOf"+tempPane["key"], tempPane["size"])
                     parentPane.panes = [tempPane]
                 }
@@ -49,11 +49,11 @@ export function replacePanesMakeEmpty(parentPane, newPane, except = -1) {
                 tempPanes[index] = comingPane;
                 parentPane.panes = tempPanes;
             } else {
-                tempSize = window.localStorage.getItem("SizeOf"+tempPanes[index]["key"]);
+                tempSize = Math.round(window.localStorage.getItem("SizeOf"+tempPanes[index]["key"]));
                 tempPanes.splice(index, 1);
                 if (tempPanes.length > 0) {
                     tempPane = {...tempPanes[0]};
-                    tempPane["size"] = window.localStorage.getItem("SizeOf"+tempPane["key"]) + tempSize;
+                    tempPane["size"] = Math.round(window.localStorage.getItem("SizeOf"+tempPane["key"])) + tempSize;
                     window.localStorage.setItem("SizeOf"+tempPane["key"], tempPane["size"])
                     parentPane.panes = [tempPane]
                 }

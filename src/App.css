@@ -23,6 +23,7 @@
   background-color: rgb(236, 238, 240);
   display: flex;
   justify-content: space-between;
+  width: "100%";
 }
 
 .actions {

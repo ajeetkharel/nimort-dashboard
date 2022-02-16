@@ -1,7 +1,8 @@
 import { createSlice, current } from "@reduxjs/toolkit";
 import { addFigureInDashboard, replacePaneInTree } from "../../components/dashboard/utils/dashboard_actions/add_figure";
-import { findPaneInDashboard } from "../../components/dashboard/utils/dashboard_actions/drag_figure";
+import { findPaneInDashboard, removeLoneParents, replacePanesMakeEmptyForDrag } from "../../components/dashboard/utils/dashboard_actions/drag_figure";
 import { removeFigureFromDashboard, replacePanesMakeEmpty } from "../../components/dashboard/utils/dashboard_actions/remove_figure";
+import { exportToJsonFile, setSavedSizeOfPanes } from "../../components/dashboard/utils/tools/helpers";
 import { generateSplitter, generateWidget } from "../../components/dashboard/utils/tools/widget_generator";
 
 const initialState = {
@@ -11,7 +12,7 @@ const initialState = {
 let HORIZONTAL = ['top', 'bottom'];
 // let VERTICAL = ['left', 'right'];
 
-let FIRST_POSITIONS = ['top', 'left']
+let FIRST_POSITIONS = ['top', 'left'];
 // let SECOND_POSITIONS = ['bottom', 'right']
 
 
@@ -27,7 +28,7 @@ export const paneSlice = createSlice({
     },
     draggedInto: (state, data) => {
       var drag_data = data.payload;
-      console.log(`Dragged from ${drag_data.from} to ${drag_data.to}`);
+      console.log(`Dragged from ${drag_data.from} to ${drag_data.to} direction ${drag_data.direction}`);
 
       var fromData = findPaneInDashboard([current(state).tree], drag_data.from, {});
       var toData = findPaneInDashboard([current(state).tree], drag_data.to, {});
@@ -42,23 +43,36 @@ export const paneSlice = createSlice({
       if (HORIZONTAL.includes(drag_data.direction)) {
         split = 'horizontal';
       }
+      // let height = document.getElementById(toPane["key"]).clientHeight;
+      // let width = document.getElementById(toPane["key"]).clientWidth;
 
-      let panes = [toPane, fromPane]
+      // if(height > width) {
+      //   split = "horizontal"
+      // }
+
+      let panes = [{...toPane, size: 50}, {...fromPane, size: 50}]
 
       if (FIRST_POSITIONS.includes(drag_data.direction)) {
-        panes = [fromPane, toPane]
+        panes = [{...fromPane, size: 50}, {...toPane, size: 50}]
       }
 
-      var splitterObj = generateSplitter(
-        split,
-        panes,
-        toPane["size"]
-      );
-
-      var tempPanes = [...parent["panes"]];
-      tempPanes.splice(index, 1, splitterObj);
-      parent = { ...parent, panes: tempPanes };
-
+      let splitterObj;
+      if(parent.panes.indexOf(fromPane) != -1){
+        parent = {...parent, split: split, panes:panes}
+        splitterObj = parent;
+      }
+      else{
+        let splitterSize = Math.round(window.localStorage.getItem("SizeOf" + toPane["key"]) || toPane["size"]);
+        splitterObj = generateSplitter(
+          100,
+          splitterSize,
+          split,
+          panes
+        );
+        var tempPanes = [...parent["panes"]];
+        tempPanes.splice(index, 1, splitterObj);
+        parent = { ...parent, panes: tempPanes };
+      }
       if (current(state).tree["key"] == parent["key"]) {
         state.tree = parent;
       } else {
@@ -70,7 +84,7 @@ export const paneSlice = createSlice({
       if (pane.key == state.tree.key) {
         state.tree = initialState;
       } else {
-        var parentPane = replacePanesMakeEmpty(
+        var parentPane = replacePanesMakeEmptyForDrag(
           { ...current(state).tree },
           pane,
           splitterObj.key
@@ -78,14 +92,24 @@ export const paneSlice = createSlice({
         if (parentPane.panes.length == 0) {
           state.tree = {};
         } else {
-          state.tree = parentPane;
+          state.tree = removeLoneParents(parentPane);
         }
       }
     },
+    exportDashboard: (state) => {
+      let dashboardTree = current(state).tree;
+      if (dashboardTree["key"]) {
+        dashboardTree = setSavedSizeOfPanes({ ...dashboardTree });
+        exportToJsonFile(dashboardTree);
+      }
+    },
+    importDashboard: (state, obj) => {
+      state.tree = obj.payload;
+    }
   },
 });
 
 const { reducer } = paneSlice;
-export const { addFigure, removeFigure, draggedInto } = paneSlice.actions;
+export const { addFigure, removeFigure, draggedInto, exportDashboard, importDashboard } = paneSlice.actions;
 
 export default reducer;

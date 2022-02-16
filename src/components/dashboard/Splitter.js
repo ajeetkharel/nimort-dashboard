@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import SplitPane from "react-split-pane";
 import CustomPane from "./CustomPane";
 import Pane from "react-split-pane/lib/Pane";
@@ -8,35 +8,40 @@ import 'react-reflex/styles.css';
 
 const Splitter = React.memo((props) => {
   let config = props.config;
+
   let sizes = [];
   if (config.panes.length > 0) {
-    config.panes.map((pane, idx) => {
+    config.panes.map((pane) => {
       if (window.localStorage.getItem("SizeOf" + pane["key"]) === null) {
         window.localStorage.setItem("SizeOf" + pane["key"], pane["size"]);
       }
 
       let currentSize = window.localStorage.getItem("SizeOf" + pane["key"]);
+      sizes.push(currentSize);
 
-      if(sizes[idx] != currentSize ) {
-        sizes.push(currentSize);
-      }
     });
   }
-
   const [paneSizes, setPaneSizes] = useState(sizes);
 
-  useEffect(() => {
-    console.log("Length changed");
-    if (config.panes.length > 0) {
-      if (window.localStorage.getItem("SizeOf" + config.panes[0]["key"]) == 100) {
-        let newSizes = [];
-        if (config.panes.length > 0) {
-          config.panes.map((pane) => {
-            newSizes.push(pane["size"]);
-          })
-        }
-        setPaneSizes(newSizes);
+  function updateLocalStorage(sizes, panes) {
+    if (panes.length > 0) {
+      for (let i = 0; i < sizes.length; i++) {
+        window.localStorage.setItem("SizeOf" + panes[i]["key"], sizes[i]);
       }
+    }
+  }
+
+
+  useEffect(() => {
+    if (config.panes.length > 0) {
+      let newSizes = [];
+      if (config.panes.length > 0) {
+        config.panes.map((pane) => {
+          newSizes.push(pane["size"]);
+        })
+      }
+      setPaneSizes(newSizes);
+      updateLocalStorage(newSizes, config.panes);
     }
   }, [config.panes.length])
 
@@ -44,19 +49,20 @@ const Splitter = React.memo((props) => {
   return (
     <SplitPane
       split={config.split}
-      onChange={(sizes) => {
+      onResizeEnd={(sizes) => {
         let changedSizes = []
         sizes.map((size) => changedSizes.push(parseFloat(size)));
         setPaneSizes(changedSizes);
+        updateLocalStorage(changedSizes, config.panes);
         window.localStorage.setItem("SizeOf" + config["key"], changedSizes);
       }}
+      minSize={`${(config.panes.length > 0) ? config.panes.length * 200 : 200}px`}
     >
       {
         (config.panes.length > 0) ?
           config.panes.map((s, idx) => {
             return (
-              console.log("Assigning sizes to pane", s["key"], paneSizes),
-              <Pane size={`${paneSizes[idx] || 50}%`} minSize="20%">
+              <Pane split={s.split} size={`${paneSizes[idx] || 50}%`} minSize={`${(s.panes.length > 0) ? s.panes.length * 200 : 200}px`}>
                 <Splitter config={s} />
               </Pane>
             )

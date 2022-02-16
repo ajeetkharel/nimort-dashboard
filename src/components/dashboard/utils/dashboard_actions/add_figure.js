@@ -39,7 +39,7 @@ function addNewPane(tree) {
     if (toSplit) {
         var splitterObj = generateSplitter(
             100,
-            pane["size"],
+            window.localStorage.getItem("SizeOf"+pane["key"]) ||  window.localStorage.getItem("SizeOf"+pane.panes[0]["key"]) || pane["size"],
             pane["split"],
             [pane]
         );
