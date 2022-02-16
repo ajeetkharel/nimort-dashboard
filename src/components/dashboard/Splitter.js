@@ -4,6 +4,7 @@ import CustomPane from "./CustomPane";
 import Pane from "react-split-pane/lib/Pane";
 
 import 'react-reflex/styles.css';
+import { bulkUpdateSizeInLocalStorage } from "./utils/tools/helpers";
 
 
 const Splitter = React.memo((props) => {
@@ -23,15 +24,6 @@ const Splitter = React.memo((props) => {
   }
   const [paneSizes, setPaneSizes] = useState(sizes);
 
-  function updateLocalStorage(sizes, panes) {
-    if (panes.length > 0) {
-      for (let i = 0; i < sizes.length; i++) {
-        window.localStorage.setItem("SizeOf" + panes[i]["key"], sizes[i]);
-      }
-    }
-  }
-
-
   useEffect(() => {
     if (config.panes.length > 0) {
       let newSizes = [];
@@ -41,7 +33,7 @@ const Splitter = React.memo((props) => {
         })
       }
       setPaneSizes(newSizes);
-      updateLocalStorage(newSizes, config.panes);
+      bulkUpdateSizeInLocalStorage(newSizes, config.panes);
     }
   }, [config.panes.length])
 
@@ -53,7 +45,7 @@ const Splitter = React.memo((props) => {
         let changedSizes = []
         sizes.map((size) => changedSizes.push(parseFloat(size)));
         setPaneSizes(changedSizes);
-        updateLocalStorage(changedSizes, config.panes);
+        bulkUpdateSizeInLocalStorage(changedSizes, config.panes);
         window.localStorage.setItem("SizeOf" + config["key"], changedSizes);
       }}
       minSize={`${(config.panes.length > 0) ? config.panes.length * 200 : 200}px`}

@@ -48,18 +48,18 @@ function moveBothFigureToNewSplitter(tree, panes, treeStructure) {
   return [treeStructure, splitterObj.key];
 }
 
-export function findPaneInDashboard(dictlist, value, parent) {
+export function findPaneInDashboard(dictlist, value, parent, grandParent) {
   let filteredPanes = dictlist.filter(x => x.key === value)
   if (filteredPanes.length == 1) {
-    return [filteredPanes[0], parent, dictlist.indexOf(filteredPanes[0])];
+    return [filteredPanes[0], parent, dictlist.indexOf(filteredPanes[0]), grandParent];
   }
   for (let pane of dictlist) {
     if (pane["key"] == value) {
-      return [pane, parent, dictlist.indexOf(pane)];
+      return [pane, parent, dictlist.indexOf(pane), grandParent];
     }
 
     if (pane["panes"].length > 0) {
-      pane = findPaneInDashboard(pane["panes"], value, pane);
+      pane = findPaneInDashboard(pane["panes"], value, pane, parent);
       if (pane) {
         return pane;
       }

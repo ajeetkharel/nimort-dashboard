@@ -2,8 +2,13 @@ import { getArea } from "./ui_tools";
 import { uuidv4 } from "./widget_generator";
 
 export function isSplitter(pane) {
-  if (pane["panes"].length == 2) {
+  if (pane["panes"].length == 2) { //isSplitter
     return true;
+  }
+  else if (pane["panes"].length == 1){ //itsSingleChildIsSplitter
+    if(pane["panes"][0]["panes"].length > 0) {
+      return true;
+    }
   }
   return false;
 }
@@ -94,4 +99,17 @@ export function setSavedSizeOfPanes(parent) {
     }
   });
   return parent;
+}
+
+export function updateSizeInLocalStorage(pane, newSize) {
+  window.localStorage.setItem("SizeOf"+pane["key"], newSize);
+}
+
+
+export function bulkUpdateSizeInLocalStorage(sizes, panes) {
+  if (panes.length > 0) {
+    for (let i = 0; i < sizes.length; i++) {
+      window.localStorage.setItem("SizeOf" + panes[i]["key"], sizes[i]);
+    }
+  }
 }

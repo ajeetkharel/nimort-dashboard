@@ -33,6 +33,7 @@ export function isEmptyDashboard(tree) {
 
 function addNewPane(tree) {
     var [pane, toSplit, parent] = getPaneWithHighestArea(tree);
+    console.log("Highest is ", pane);
     let element = document.getElementById(pane["key"]) || document.getElementById(pane.panes[0]["key"])
     var height = element.clientHeight;
     var width = element.clientWidth;

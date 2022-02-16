@@ -1,19 +1,18 @@
 import AntTable from "./AntTable";
 import { CloseButton, DragButton, MaximizeButton } from "./CustomButtons";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { draggedInto } from "../../rtk/dashboard/slices";
 import { useDrag } from "react-dnd";
 import { useDrop } from "react-dnd";
 import { useDispatch } from "react-redux";
-import { any } from "glamor";
 
 const CustomPane = React.memo((props) => {
-    let config = props.config;
+    const config = props.config;
     const dispatch = useDispatch();
 
     const [isInTBLR, setIsInTBLR] = useState([false, false, false, false]);
     let dropDirection = "top";
-
+ 
     const [{ isDragging }, drag, preview] = useDrag(() => ({
         type: "SplitPane",
         item: { config },
@@ -63,7 +62,7 @@ const CustomPane = React.memo((props) => {
                 var keys = Object.keys(layoutDists);
                 var lowest = Math.min.apply(null, keys.map(function (x) { return layoutDists[x] }));
                 var match = keys.filter(function (y) { return layoutDists[y] === lowest })[0];
-                console.log(match);
+
                 switch (match) {
                     case ("top"):
                         setIsInTBLR([true, false, false, false]);
@@ -88,6 +87,9 @@ const CustomPane = React.memo((props) => {
         }),
     }));
 
+    if(!isOver & isInTBLR.some((element) => element)){
+        setIsInTBLR([false, false, false, false])
+    }
 
     let backgroundColor = "#fff";
     const opacity = isDragging ? 0.9 : 1;
