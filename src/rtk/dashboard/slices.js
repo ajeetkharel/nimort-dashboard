@@ -90,7 +90,7 @@ export const paneSlice = createSlice({
         state.tree = parentPane;
       }
 
-      let pane = generateWidget(0, "vertical", drag_data.from);
+      let pane = generateWidget("", 0, "vertical", drag_data.from);
       if (pane.key == state.tree.key) {
         state.tree = initialState;
       } else {
