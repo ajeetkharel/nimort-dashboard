@@ -3,7 +3,7 @@ import { splitHorizontally, splitVertically } from "../tools/uiTools";
 import { generateSplitter } from "../tools/widgetGenerator";
 
 
-export function addFigureInDashboard(tree) {
+export function addWidgetInDashboard(tree) {
     let treeStructure;
     if (isEmptyDashboard(tree)) {
         treeStructure = generateSplitter(100);

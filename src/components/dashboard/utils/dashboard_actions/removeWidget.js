@@ -1,7 +1,7 @@
 import { generateWidget } from "../tools/widgetGenerator";
 
 
-export function removeFigureFromDashboard(tree, key) {
+export function removeWidgetFromDashboard(tree, key) {
     let treeStructure;
     let pane = generateWidget(0, "vertical", key.payload);
     if (pane.key == tree.key) {

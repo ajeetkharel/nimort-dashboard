@@ -1,6 +1,6 @@
 import { Button, Layout, Tabs } from "antd";
 import { useSelector, useDispatch } from "react-redux";
-import { addFigure, exportDashboard, importDashboard } from "./rtk/dashboard/slices";
+import { addWidget, exportDashboard, importDashboard } from "./rtk/dashboard/slices";
 import "./App.css";
 import Dashboard from "./components/dashboard/Dashboard";
 import { useRef } from "react";
@@ -40,8 +40,8 @@ function App() {
         </div>
         <hr style={{ width: "20%" }}></hr>
         <div>
-          <Button type="primary" onClick={() => dispatch(addFigure())}>
-            Add Figure
+          <Button type="primary" onClick={() => dispatch(addWidget())}>
+            Add Widget
           </Button>
         </div>
       </Content>

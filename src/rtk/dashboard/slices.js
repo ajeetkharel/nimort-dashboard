@@ -1,7 +1,7 @@
 import { createSlice, current } from "@reduxjs/toolkit";
-import { addFigureInDashboard, replacePaneInTree } from "../../components/dashboard/utils/dashboard_actions/addFigure";
-import { findPaneInDashboard, removeLoneParents, replacePanesMakeEmptyForDrag } from "../../components/dashboard/utils/dashboard_actions/dragFigure";
-import { removeFigureFromDashboard, replacePanesMakeEmpty } from "../../components/dashboard/utils/dashboard_actions/removeFigure";
+import { addWidgetInDashboard, replacePaneInTree } from "../../components/dashboard/utils/dashboard_actions/addWidget";
+import { findPaneInDashboard, removeLoneParents, replacePanesMakeEmptyForDrag } from "../../components/dashboard/utils/dashboard_actions/dragWidget";
+import { removeWidgetFromDashboard, replacePanesMakeEmpty } from "../../components/dashboard/utils/dashboard_actions/removeWidget";
 import { exportToJsonFile, setSavedSizeOfPanes, updateSizeInLocalStorage } from "../../components/dashboard/utils/tools/helpers";
 import { generateSplitter, generateWidget } from "../../components/dashboard/utils/tools/widgetGenerator";
 
@@ -20,11 +20,11 @@ export const paneSlice = createSlice({
   name: "dashboard",
   initialState,
   reducers: {
-    addFigure: (state = initialState) => {
-      state.tree = addFigureInDashboard(current(state).tree);
+    addWidget: (state = initialState) => {
+      state.tree = addWidgetInDashboard(current(state).tree);
     },
-    removeFigure: (state, key) => {
-      state.tree = removeFigureFromDashboard(current(state).tree, key);
+    removeWidget: (state, key) => {
+      state.tree = removeWidgetFromDashboard(current(state).tree, key);
     },
     draggedInto: (state, data) => {
       let drag_data = data.payload;
@@ -118,6 +118,6 @@ export const paneSlice = createSlice({
 });
 
 const { reducer } = paneSlice;
-export const { addFigure, removeFigure, draggedInto, exportDashboard, importDashboard } = paneSlice.actions;
+export const { addWidget, removeWidget, draggedInto, exportDashboard, importDashboard } = paneSlice.actions;
 
 export default reducer;

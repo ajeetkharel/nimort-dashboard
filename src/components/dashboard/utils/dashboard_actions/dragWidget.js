@@ -1,20 +1,20 @@
-import { replacePaneInTree } from "./addFigure";
-import { replacePanesMakeEmpty } from "./removeFigure";
+import { replacePaneInTree } from "./addWidget";
+import { replacePanesMakeEmpty } from "./removeWidget";
 import { generateSplitter, generateWidget } from "../tools/widgetGenerator";
 
-export default function drag_figure(tree, data, direction) {
+export default function drag_widget(tree, data, direction) {
   let treeStructure;
   let except;
   let panes = data.payload;
 
-  [treeStructure, except] = moveBothFigureToNewSplitter(tree, panes, treeStructure);
+  [treeStructure, except] = moveBothWidgetToNewSplitter(tree, panes, treeStructure);
 
   treeStructure = removePreviousChildren(panes[0], tree, treeStructure, except)
 
   return treeStructure;
 }
 
-function moveBothFigureToNewSplitter(tree, panes, treeStructure) {
+function moveBothWidgetToNewSplitter(tree, panes, treeStructure) {
   console.log(`Dragged from ${panes[0]} to ${panes[1]}`);
   let fromData = findPaneInDashboard([tree], panes[0], {});
   let toData = findPaneInDashboard([tree], panes[1], {});

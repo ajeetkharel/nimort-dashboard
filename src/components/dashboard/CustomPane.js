@@ -10,7 +10,7 @@ import {
     DragOutlined,
     ExpandAltOutlined,
 } from "@ant-design/icons/lib/icons";
-import { removeFigure } from "../../rtk/dashboard/slices";
+import { removeWidget } from "../../rtk/dashboard/slices";
 
 
 const CustomPane = React.memo((props) => {
@@ -183,7 +183,7 @@ const CustomPane = React.memo((props) => {
                                 icon={<CloseCircleFilled />}
                                 type="text"
                                 size="small"
-                                onClick={() => dispatch(removeFigure(config.key))}
+                                onClick={() => dispatch(removeWidget(config.key))}
                                 danger="true"
                             ></Button>
                         </div>
