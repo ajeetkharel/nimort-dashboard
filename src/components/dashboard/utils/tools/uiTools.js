@@ -7,10 +7,10 @@ export function getArea(pane) {
     return height * width;
 }
 
-export function splitVertically(pane, report) {
+export function splitVertically(pane, data) {
     let size = window.localStorage.getItem("SizeOf"+pane["key"]) ||  window.localStorage.getItem("SizeOf"+pane.panes[0]["key"]) || pane["size"];
 
-    let childPane = generateWidget(report["title"], 50);
+    let childPane = generateWidget(data["title"], 50);
     return {
         ...pane,
         size: Math.round(size),
@@ -19,10 +19,10 @@ export function splitVertically(pane, report) {
     };
 }
 
-export function splitHorizontally(pane, report) {
+export function splitHorizontally(pane, data) {
     let size = window.localStorage.getItem("SizeOf"+pane["key"]) ||  window.localStorage.getItem("SizeOf"+pane.panes[0]["key"]) || pane["size"];
 
-    let childPane = generateWidget(report["title"], 50);
+    let childPane = generateWidget(data["title"], 50);
     return {
         ...pane,
         size: Math.round(size),

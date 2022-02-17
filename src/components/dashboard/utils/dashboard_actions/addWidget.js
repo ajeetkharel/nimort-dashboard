@@ -3,15 +3,15 @@ import { splitHorizontally, splitVertically } from "../tools/uiTools";
 import { generateSplitter } from "../tools/widgetGenerator";
 
 
-export function addWidgetInDashboard(tree, report) {
+export function addWidgetInDashboard(tree, data) {
     let treeStructure;
     if (isEmptyDashboard(tree)) {
-        treeStructure = generateSplitter(report["title"], 100);
+        treeStructure = generateSplitter(data["title"], 100);
     }
     else {
         let [pane, splitterObj, toSplit, index] = addNewPane(
             tree,
-            report
+            data
         );
         if (toSplit) {
             let tempPanes = [...pane["panes"]];
@@ -32,7 +32,7 @@ export function isEmptyDashboard(tree) {
     return (tree["key"] == undefined);
 }
 
-function addNewPane(tree, report) {
+function addNewPane(tree, data) {
     let [pane, toSplit, parent] = getPaneWithHighestArea(tree);
     console.log("Highest is ", pane);
     let element = document.getElementById(pane["key"]) || document.getElementById(pane.panes[0]["key"])
@@ -47,16 +47,16 @@ function addNewPane(tree, report) {
             [pane]
         );
         if (height > width) {
-            splitterObj = splitHorizontally(splitterObj, report);
+            splitterObj = splitHorizontally(splitterObj, data);
         } else {
-            splitterObj = splitVertically(splitterObj, report);
+            splitterObj = splitVertically(splitterObj, data);
         }
         let index = parent["panes"].indexOf(pane);
         return [parent, splitterObj, toSplit, index];
     } else if (height > width) {
-        return [splitHorizontally(pane, report), , toSplit];
+        return [splitHorizontally(pane, data), , toSplit];
     } else {
-        return [splitVertically(pane, report), , toSplit];
+        return [splitVertically(pane, data), , toSplit];
     }
 }
 

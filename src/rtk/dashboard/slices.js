@@ -20,9 +20,9 @@ export const paneSlice = createSlice({
   name: "dashboard",
   initialState,
   reducers: {
-    addWidget: (state = initialState, report) => {
-      console.log("report", report.payload);
-      state.tree = addWidgetInDashboard(current(state).tree, report.payload);
+    addWidget: (state = initialState, data) => {
+      console.log("data", data.payload);
+      state.tree = addWidgetInDashboard(current(state).tree, data.payload);
     },
     removeWidget: (state, key) => {
       state.tree = removeWidgetFromDashboard(current(state).tree, key);
