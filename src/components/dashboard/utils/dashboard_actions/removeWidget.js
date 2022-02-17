@@ -3,7 +3,7 @@ import { generateWidget } from "../tools/widgetGenerator";
 
 export function removeWidgetFromDashboard(tree, key) {
     let treeStructure;
-    let pane = generateWidget(0, "vertical", key.payload);
+    let pane = generateWidget("", 0, "vertical", key.payload);
     if (pane.key == tree.key) {
         treeStructure = {};
     } else {

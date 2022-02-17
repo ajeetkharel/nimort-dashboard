@@ -3,14 +3,15 @@ import { splitHorizontally, splitVertically } from "../tools/uiTools";
 import { generateSplitter } from "../tools/widgetGenerator";
 
 
-export function addWidgetInDashboard(tree) {
+export function addWidgetInDashboard(tree, report) {
     let treeStructure;
     if (isEmptyDashboard(tree)) {
-        treeStructure = generateSplitter(100);
+        treeStructure = generateSplitter(report["title"], 100);
     }
     else {
         let [pane, splitterObj, toSplit, index] = addNewPane(
-            tree
+            tree,
+            report
         );
         if (toSplit) {
             let tempPanes = [...pane["panes"]];
@@ -31,7 +32,7 @@ export function isEmptyDashboard(tree) {
     return (tree["key"] == undefined);
 }
 
-function addNewPane(tree) {
+function addNewPane(tree, report) {
     let [pane, toSplit, parent] = getPaneWithHighestArea(tree);
     console.log("Highest is ", pane);
     let element = document.getElementById(pane["key"]) || document.getElementById(pane.panes[0]["key"])
@@ -39,22 +40,23 @@ function addNewPane(tree) {
     let width = element.clientWidth;
     if (toSplit) {
         let splitterObj = generateSplitter(
+            "",
             100,
             window.localStorage.getItem("SizeOf"+pane["key"]) ||  window.localStorage.getItem("SizeOf"+pane.panes[0]["key"]) || pane["size"],
             pane["split"],
             [pane]
         );
         if (height > width) {
-            splitterObj = splitHorizontally(splitterObj);
+            splitterObj = splitHorizontally(splitterObj, report);
         } else {
-            splitterObj = splitVertically(splitterObj);
+            splitterObj = splitVertically(splitterObj, report);
         }
         let index = parent["panes"].indexOf(pane);
         return [parent, splitterObj, toSplit, index];
     } else if (height > width) {
-        return [splitHorizontally(pane), , toSplit];
+        return [splitHorizontally(pane, report), , toSplit];
     } else {
-        return [splitVertically(pane), , toSplit];
+        return [splitVertically(pane, report), , toSplit];
     }
 }
 

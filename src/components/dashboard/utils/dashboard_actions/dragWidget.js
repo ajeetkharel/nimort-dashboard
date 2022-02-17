@@ -29,6 +29,7 @@ function moveBothWidgetToNewSplitter(tree, panes, treeStructure) {
     split = "horizontal";
   }
   let splitterObj = generateSplitter(
+    "",
     toPane["height"],
     toPane["width"],
     split,
@@ -68,7 +69,7 @@ export function findPaneInDashboard(dictlist, value, parent, grandParent) {
 }
 
 function removePreviousChildren(key, tree, treeStructure, except) {
-  let pane = generateWidget(0, 0, "vertical", key);
+  let pane = generateWidget("", 0, 0, "vertical", key);
   if (pane.key == treeStructure.key) {
     treeStructure = {};
   } else {

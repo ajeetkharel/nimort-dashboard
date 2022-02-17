@@ -6,8 +6,9 @@ export function uuidv4() {
   );
 }
 
-export function generateWidget(size=100, split = "vertical", key = uuidv4()) {
+export function generateWidget(title, size=100, split = "vertical", key = uuidv4()) {
   return {
+    title: title,
     key: key,
     split: split,
     panes: [],
@@ -17,10 +18,11 @@ export function generateWidget(size=100, split = "vertical", key = uuidv4()) {
 }
 
 export function generateSplitter(
+  title,
   widgetSize,
   size=100,
   split = "vertical",
-  panes = [generateWidget(widgetSize)]
+  panes = [generateWidget(title, widgetSize)]
 ) {
   return {
     key: uuidv4(),

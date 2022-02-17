@@ -20,8 +20,9 @@ export const paneSlice = createSlice({
   name: "dashboard",
   initialState,
   reducers: {
-    addWidget: (state = initialState) => {
-      state.tree = addWidgetInDashboard(current(state).tree);
+    addWidget: (state = initialState, report) => {
+      console.log("report", report.payload);
+      state.tree = addWidgetInDashboard(current(state).tree, report.payload);
     },
     removeWidget: (state, key) => {
       state.tree = removeWidgetFromDashboard(current(state).tree, key);
@@ -63,6 +64,7 @@ export const paneSlice = createSlice({
       else {
         let splitterSize = Math.round(window.localStorage.getItem("SizeOf" + toPane["key"]) || toPane["size"]);
         splitterObj = generateSplitter(
+          "",
           100,
           splitterSize,
           split,

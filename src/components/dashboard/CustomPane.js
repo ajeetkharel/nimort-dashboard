@@ -160,7 +160,7 @@ const CustomPane = React.memo((props) => {
 
             <div>
                 <div className="title-bar">
-                    <div className="file-name">{config.key}</div>
+                    <div className="file-name">{config.title}</div>
                     {config.key !== "Reports" ? (
                         <div className="actions">
                             <Button

@@ -4,6 +4,7 @@ import { addWidget, exportDashboard, importDashboard } from "./rtk/dashboard/sli
 import "./App.css";
 import Dashboard from "./components/dashboard/Dashboard";
 import { useRef } from "react";
+import { uuidv4 } from "./components/dashboard/utils/tools/widgetGenerator";
 
 const Content = Layout;
 
@@ -40,7 +41,7 @@ function App() {
         </div>
         <hr style={{ width: "20%" }}></hr>
         <div>
-          <Button type="primary" onClick={() => dispatch(addWidget())}>
+          <Button type="primary" onClick={() => dispatch(addWidget({title: uuidv4()}))}>
             Add Widget
           </Button>
         </div>
