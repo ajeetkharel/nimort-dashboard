@@ -1,13 +1,13 @@
-import { generateWidget } from "../tools/widget_generator";
+import { generateWidget } from "../tools/widgetGenerator";
 
 
 export function removeFigureFromDashboard(tree, key) {
     let treeStructure;
-    var pane = generateWidget(0, "vertical", key.payload);
+    let pane = generateWidget(0, "vertical", key.payload);
     if (pane.key == tree.key) {
         treeStructure = {};
     } else {
-        var parentPane = replacePanesMakeEmpty(
+        let parentPane = replacePanesMakeEmpty(
             { ...tree },
             pane
         );
@@ -22,9 +22,9 @@ export function removeFigureFromDashboard(tree, key) {
 
 export function replacePanesMakeEmpty(parentPane, newPane, except = -1) {
     parentPane.panes.forEach((pane, idx) => {
-        var tempPanes;
-        var tempPane;
-        var comingPane;
+        let tempPanes;
+        let tempPane;
+        let comingPane;
         let tempSize;
         if (pane.key == newPane.key) {
             if (parentPane.key != except) {

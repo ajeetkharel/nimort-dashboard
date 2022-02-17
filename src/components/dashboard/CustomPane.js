@@ -1,10 +1,17 @@
 import AntTable from "./AntTable";
-import { CloseButton, DragButton, MaximizeButton } from "./CustomButtons";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { draggedInto } from "../../rtk/dashboard/slices";
 import { useDrag } from "react-dnd";
 import { useDrop } from "react-dnd";
 import { useDispatch } from "react-redux";
+import { Button } from "antd";
+import {
+    CloseCircleFilled,
+    DragOutlined,
+    ExpandAltOutlined,
+} from "@ant-design/icons/lib/icons";
+import { removeFigure } from "../../rtk/dashboard/slices";
+
 
 const CustomPane = React.memo((props) => {
     const config = props.config;
@@ -12,7 +19,7 @@ const CustomPane = React.memo((props) => {
 
     const [isInTBLR, setIsInTBLR] = useState([false, false, false, false]);
     let dropDirection = "top";
- 
+
     const [{ isDragging }, drag, preview] = useDrag(() => ({
         type: "SplitPane",
         item: { config },
@@ -53,17 +60,17 @@ const CustomPane = React.memo((props) => {
                 const relativePosition = [dragPosition['x'] - dropTargetBounds['x'], dragPosition['y'] - dropTargetBounds['y']];
                 console.log("Relative", relativePosition);
 
-                const layoutDists = {
+                const distances = {
                     "top": relativePosition[1],
                     "left": relativePosition[0],
                     "right": dropTargetBounds["width"] - relativePosition[0],
                     "bottom": dropTargetBounds["height"] - relativePosition[1]
                 }
-                var keys = Object.keys(layoutDists);
-                var lowest = Math.min.apply(null, keys.map(function (x) { return layoutDists[x] }));
-                var match = keys.filter(function (y) { return layoutDists[y] === lowest })[0];
+                let keys = Object.keys(distances);
+                let lowest = Math.min.apply(null, keys.map(function (x) { return distances[x] }));
+                let direction = keys.filter(function (y) { return distances[y] === lowest })[0];
 
-                switch (match) {
+                switch (direction) {
                     case ("top"):
                         setIsInTBLR([true, false, false, false]);
                         break;
@@ -77,7 +84,7 @@ const CustomPane = React.memo((props) => {
                         setIsInTBLR([false, false, false, true]);
                         break;
                 }
-                dropDirection = match;
+                dropDirection = direction;
                 console.log("New drop direction", dropDirection);
             }
         },
@@ -87,7 +94,7 @@ const CustomPane = React.memo((props) => {
         }),
     }));
 
-    if(!isOver & isInTBLR.some((element) => element)){
+    if (!isOver & isInTBLR.some((element) => element)) {
         setIsInTBLR([false, false, false, false])
     }
 
@@ -156,9 +163,29 @@ const CustomPane = React.memo((props) => {
                     <div className="file-name">{config.key}</div>
                     {config.key !== "Reports" ? (
                         <div className="actions">
-                            <DragButton pane_key={config.key} drag={drag} />
-                            <MaximizeButton pane_key={config.key} />
-                            <CloseButton pane_key={config.key} />
+                            <Button
+                                icon={<DragOutlined />}
+                                type="text"
+                                size="small"
+                                primary="true"
+                                key={`DragButtonFor${config.key}`}
+                                id={`DragFor${config.key}`}
+                                ref={drag}
+                            ></Button>
+                            <Button
+                                icon={<ExpandAltOutlined />}
+                                type="text"
+                                size="small"
+                                key={`MaximizeButtonFor${config.key}`}
+                                primary="true"
+                            ></Button>
+                            <Button
+                                icon={<CloseCircleFilled />}
+                                type="text"
+                                size="small"
+                                onClick={() => dispatch(removeFigure(config.key))}
+                                danger="true"
+                            ></Button>
                         </div>
                     ) : (
                         ""

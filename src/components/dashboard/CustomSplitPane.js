@@ -7,7 +7,7 @@ import 'react-reflex/styles.css';
 import { bulkUpdateSizeInLocalStorage } from "./utils/tools/helpers";
 
 
-const Splitter = React.memo((props) => {
+const CustomSplitPane = React.memo((props) => {
   let config = props.config;
 
   let sizes = [];
@@ -55,7 +55,7 @@ const Splitter = React.memo((props) => {
           config.panes.map((s, idx) => {
             return (
               <Pane split={s.split} size={`${paneSizes[idx] || 50}%`} minSize={`${(s.panes.length > 0) ? s.panes.length * 200 : 200}px`}>
-                <Splitter config={s} />
+                <CustomSplitPane config={s} />
               </Pane>
             )
           })
@@ -65,4 +65,4 @@ const Splitter = React.memo((props) => {
   );
 });
 
-export default Splitter;
+export default CustomSplitPane;

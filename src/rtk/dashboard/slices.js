@@ -1,9 +1,9 @@
 import { createSlice, current } from "@reduxjs/toolkit";
-import { addFigureInDashboard, replacePaneInTree } from "../../components/dashboard/utils/dashboard_actions/add_figure";
-import { findPaneInDashboard, removeLoneParents, replacePanesMakeEmptyForDrag } from "../../components/dashboard/utils/dashboard_actions/drag_figure";
-import { removeFigureFromDashboard, replacePanesMakeEmpty } from "../../components/dashboard/utils/dashboard_actions/remove_figure";
+import { addFigureInDashboard, replacePaneInTree } from "../../components/dashboard/utils/dashboard_actions/addFigure";
+import { findPaneInDashboard, removeLoneParents, replacePanesMakeEmptyForDrag } from "../../components/dashboard/utils/dashboard_actions/dragFigure";
+import { removeFigureFromDashboard, replacePanesMakeEmpty } from "../../components/dashboard/utils/dashboard_actions/removeFigure";
 import { exportToJsonFile, setSavedSizeOfPanes, updateSizeInLocalStorage } from "../../components/dashboard/utils/tools/helpers";
-import { generateSplitter, generateWidget } from "../../components/dashboard/utils/tools/widget_generator";
+import { generateSplitter, generateWidget } from "../../components/dashboard/utils/tools/widgetGenerator";
 
 const initialState = {
   tree: {},
@@ -27,18 +27,18 @@ export const paneSlice = createSlice({
       state.tree = removeFigureFromDashboard(current(state).tree, key);
     },
     draggedInto: (state, data) => {
-      var drag_data = data.payload;
+      let drag_data = data.payload;
       console.log(`Dragged from ${drag_data.from} to ${drag_data.to} direction ${drag_data.direction}`);
 
-      var fromData = findPaneInDashboard([current(state).tree], drag_data.from, {}, {});
-      var toData = findPaneInDashboard([current(state).tree], drag_data.to, {}, {});
+      let fromData = findPaneInDashboard([current(state).tree], drag_data.from, {}, {});
+      let toData = findPaneInDashboard([current(state).tree], drag_data.to, {}, {});
 
       // toPane, parent, index
-      var toPane = toData[0];
-      var fromPane = fromData[0];
-      var parent = toData[1];
-      var index = toData[2];
-      var grandParent = toData[3];
+      let toPane = toData[0];
+      let fromPane = fromData[0];
+      let parent = toData[1];
+      let index = toData[2];
+      let grandParent = toData[3];
 
 
       let split = 'vertical';
@@ -69,7 +69,7 @@ export const paneSlice = createSlice({
           panes
         );
         updateSizeInLocalStorage(splitterObj, splitterSize);
-        var tempPanes = [...parent["panes"]];
+        let tempPanes = [...parent["panes"]];
         tempPanes.splice(index, 1, splitterObj);
 
         if (grandParent.panes && grandParent.panes.indexOf(fromPane) != -1) {
@@ -84,15 +84,15 @@ export const paneSlice = createSlice({
       if (current(state).tree["key"] == parent["key"]) {
         state.tree = parent;
       } else {
-        var parentPane = replacePaneInTree({ ...current(state).tree }, parent);
+        let parentPane = replacePaneInTree({ ...current(state).tree }, parent);
         state.tree = parentPane;
       }
 
-      var pane = generateWidget(0, "vertical", drag_data.from);
+      let pane = generateWidget(0, "vertical", drag_data.from);
       if (pane.key == state.tree.key) {
         state.tree = initialState;
       } else {
-        var parentPane = replacePanesMakeEmptyForDrag(
+        let parentPane = replacePanesMakeEmptyForDrag(
           { ...current(state).tree },
           pane,
           splitterObj.key

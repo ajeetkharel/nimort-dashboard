@@ -1,5 +1,5 @@
-import { getArea } from "./ui_tools";
-import { uuidv4 } from "./widget_generator";
+import { getArea } from "./uiTools";
+import { uuidv4 } from "./widgetGenerator";
 
 export function isSplitter(pane) {
   if (pane["panes"].length == 2) { //isSplitter
@@ -36,7 +36,7 @@ function findHighestAreaInSplitter(
       if (pane.panes.length == 1) {
         toSplit = false;
       }
-      var area = getArea(pane);
+      let area = getArea(pane);
       if (area > highest) {
         highest = area;
         highestPane = pane;
@@ -48,10 +48,10 @@ function findHighestAreaInSplitter(
 }
 
 export function getPaneWithHighestArea(structure) {
-  var highest = 0;
-  var highestPane = structure;
-  var toSplit = false;
-  var details = findHighestAreaInSplitter(
+  let highest = 0;
+  let highestPane = structure;
+  let toSplit = false;
+  let details = findHighestAreaInSplitter(
     highest,
     highestPane,
     toSplit,

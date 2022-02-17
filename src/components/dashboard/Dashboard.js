@@ -1,20 +1,19 @@
 import React from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import Splitter from "./Splitter";
+import CustomSplitPane from "./CustomSplitPane";
 
 export const Dashboard = React.memo((props) => {
   let tree = props.tree;
-  let dashboard = (
+  return (
     <DndProvider backend={HTML5Backend}>
       {tree["key"] !== undefined
-        ? [tree].map((splitter) => {
-          return <Splitter config={splitter} />
+        ? [tree].map((splitter_config) => {
+          return <CustomSplitPane config={splitter_config} />
         })
         : "Empty dash"}
     </DndProvider>
   );
-  return dashboard
 });
 
 export default Dashboard;

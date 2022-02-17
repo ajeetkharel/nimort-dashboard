@@ -13,9 +13,9 @@ function App() {
   const inputFile = useRef(null);
 
   function handleFileImportChange(event) {
-    var reader = new FileReader();
+    let reader = new FileReader();
     reader.onload = ((event) => {
-      var obj = JSON.parse(event.target.result);
+      let obj = JSON.parse(event.target.result);
       dispatch(importDashboard(obj));
     });
     reader.readAsText(event.target.files[0]);

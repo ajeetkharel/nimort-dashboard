@@ -1,6 +1,6 @@
 import { getPaneWithHighestArea } from "../tools/helpers";
-import { splitHorizontally, splitVertically } from "../tools/ui_tools";
-import { generateSplitter } from "../tools/widget_generator";
+import { splitHorizontally, splitVertically } from "../tools/uiTools";
+import { generateSplitter } from "../tools/widgetGenerator";
 
 
 export function addFigureInDashboard(tree) {
@@ -9,18 +9,18 @@ export function addFigureInDashboard(tree) {
         treeStructure = generateSplitter(100);
     }
     else {
-        var [pane, splitterObj, toSplit, index] = addNewPane(
+        let [pane, splitterObj, toSplit, index] = addNewPane(
             tree
         );
         if (toSplit) {
-            var tempPanes = [...pane["panes"]];
+            let tempPanes = [...pane["panes"]];
             tempPanes.splice(index, 1, splitterObj);
             pane = { ...pane, panes: tempPanes };
         }
         if (tree["key"] === pane["key"]) {
             treeStructure = pane;
         } else {
-            var parentPane = replacePaneInTree({ ...tree }, pane);
+            let parentPane = replacePaneInTree({ ...tree }, pane);
             treeStructure = parentPane;
         }
     }
@@ -32,13 +32,13 @@ export function isEmptyDashboard(tree) {
 }
 
 function addNewPane(tree) {
-    var [pane, toSplit, parent] = getPaneWithHighestArea(tree);
+    let [pane, toSplit, parent] = getPaneWithHighestArea(tree);
     console.log("Highest is ", pane);
     let element = document.getElementById(pane["key"]) || document.getElementById(pane.panes[0]["key"])
-    var height = element.clientHeight;
-    var width = element.clientWidth;
+    let height = element.clientHeight;
+    let width = element.clientWidth;
     if (toSplit) {
-        var splitterObj = generateSplitter(
+        let splitterObj = generateSplitter(
             100,
             window.localStorage.getItem("SizeOf"+pane["key"]) ||  window.localStorage.getItem("SizeOf"+pane.panes[0]["key"]) || pane["size"],
             pane["split"],
@@ -49,7 +49,7 @@ function addNewPane(tree) {
         } else {
             splitterObj = splitVertically(splitterObj);
         }
-        var index = parent["panes"].indexOf(pane);
+        let index = parent["panes"].indexOf(pane);
         return [parent, splitterObj, toSplit, index];
     } else if (height > width) {
         return [splitHorizontally(pane), , toSplit];
@@ -60,7 +60,7 @@ function addNewPane(tree) {
 
 export function replacePaneInTree(parentPane, newPane) {
     parentPane.panes.forEach((pane, idx) => {
-        var tempPanes;
+        let tempPanes;
         if (pane.key === newPane.key) {
             tempPanes = [...parentPane.panes];
             tempPanes[idx] = newPane;

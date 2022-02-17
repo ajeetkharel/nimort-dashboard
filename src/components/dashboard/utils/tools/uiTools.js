@@ -1,16 +1,16 @@
-import { generateWidget } from "./widget_generator";
+import { generateWidget } from "./widgetGenerator";
 
 export function getArea(pane) {
     let element = document.getElementById(pane["key"]) || document.getElementById(pane.panes[0]["key"])
-    var height = element.clientHeight;
-    var width = element.clientWidth;
+    let height = element.clientHeight;
+    let width = element.clientWidth;
     return height * width;
 }
 
 export function splitVertically(pane) {
-    var size = window.localStorage.getItem("SizeOf"+pane["key"]) ||  window.localStorage.getItem("SizeOf"+pane.panes[0]["key"]) || pane["size"];
+    let size = window.localStorage.getItem("SizeOf"+pane["key"]) ||  window.localStorage.getItem("SizeOf"+pane.panes[0]["key"]) || pane["size"];
 
-    var childPane = generateWidget(50);
+    let childPane = generateWidget(50);
     return {
         ...pane,
         size: Math.round(size),
@@ -20,9 +20,9 @@ export function splitVertically(pane) {
 }
 
 export function splitHorizontally(pane) {
-    var size = window.localStorage.getItem("SizeOf"+pane["key"]) ||  window.localStorage.getItem("SizeOf"+pane.panes[0]["key"]) || pane["size"];
+    let size = window.localStorage.getItem("SizeOf"+pane["key"]) ||  window.localStorage.getItem("SizeOf"+pane.panes[0]["key"]) || pane["size"];
 
-    var childPane = generateWidget(50);
+    let childPane = generateWidget(50);
     return {
         ...pane,
         size: Math.round(size),
