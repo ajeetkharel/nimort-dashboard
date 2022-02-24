@@ -1,12 +1,13 @@
 import { createSlice, current } from "@reduxjs/toolkit";
 import { addWidgetInDashboard, replacePaneInTree } from "../../components/dashboard/utils/dashboard_actions/addWidget";
 import { findPaneInDashboard, removeLoneParents, replacePanesMakeEmptyForDrag } from "../../components/dashboard/utils/dashboard_actions/dragWidget";
-import { removeWidgetFromDashboard, replacePanesMakeEmpty } from "../../components/dashboard/utils/dashboard_actions/removeWidget";
+import { removeWidgetFromDashboard } from "../../components/dashboard/utils/dashboard_actions/removeWidget";
 import { exportToJsonFile, setSavedSizeOfPanes, updateSizeInLocalStorage } from "../../components/dashboard/utils/tools/helpers";
-import { generateSplitter, generateWidget } from "../../components/dashboard/utils/tools/widgetGenerator";
+import { generateSplitter, generateWidget, uuidv4 } from "../../components/dashboard/utils/tools/widgetGenerator";
 
 const initialState = {
   tree: {},
+  activeKey: undefined,
 };
 
 let HORIZONTAL = ['top', 'bottom'];
@@ -16,16 +17,19 @@ let FIRST_POSITIONS = ['top', 'left'];
 // let SECOND_POSITIONS = ['bottom', 'right']
 
 
-export const paneSlice = createSlice({
+export const dashboardSlice = createSlice({
   name: "dashboard",
   initialState,
   reducers: {
     addWidget: (state = initialState, data) => {
-      console.log("data", data.payload);
-      state.tree = addWidgetInDashboard(current(state).tree, data.payload);
+      const report = data.payload[0];
+      const key = data.payload[1];
+
+      const tree = current(state).tree[key].data;
+      state.tree[key].data = addWidgetInDashboard(tree, report);
     },
-    removeWidget: (state, key) => {
-      state.tree = removeWidgetFromDashboard(current(state).tree, key);
+    removeWidget: (state, widgetKey) => {
+      state.tree[state.activeKey] = { ...state.tree[state.activeKey], data: removeWidgetFromDashboard(current(state).tree[state.activeKey].data, widgetKey) };
     },
     draggedInto: (state, data) => {
       let drag_data = data.payload;
@@ -77,7 +81,7 @@ export const paneSlice = createSlice({
         if (grandParent.panes && grandParent.panes.indexOf(fromPane) != -1) {
           const parentSize = parent["size"] + fromPane["size"];
           parent = { ...parent, size: parentSize, panes: tempPanes };
-          updateSizeInLocalStorage(parent, parentSize)
+          updateSizeInLocalStorage(parent, parentSize);
         }
         else {
           parent = { ...parent, panes: tempPanes };
@@ -107,19 +111,48 @@ export const paneSlice = createSlice({
       }
     },
     exportDashboard: (state) => {
-      let dashboardTree = current(state).tree;
-      if (dashboardTree["key"]) {
-        dashboardTree = setSavedSizeOfPanes({ ...dashboardTree });
-        exportToJsonFile(dashboardTree);
+      if (current(state).activeKey) {
+        let dashboardTree = current(state).tree[current(state).activeKey];
+        if (Object.keys(dashboardTree.data).length != 0) {
+          let tempData = setSavedSizeOfPanes({ ...dashboardTree.data });
+          exportToJsonFile({ ...dashboardTree, data: tempData });
+        }
+        else {
+          alert("Cannot export empty dashboard");
+        }
       }
     },
     importDashboard: (state, obj) => {
-      state.tree = obj.payload;
+      const dashName = uuidv4();
+      state.tree[dashName] = { ...obj.payload };
+      state.activeKey = dashName;
+    },
+    addNewTab: (state) => {
+      const dashName = uuidv4();
+      state.tree[dashName] = {
+        title: 'untitled',
+        data: {}
+      };
+      state.activeKey = dashName;
+    },
+    setActiveKey: (state, key) => {
+      state.activeKey = key.payload;
+    },
+    removeTab: (state, key) => {
+      const { [key.payload]: data, ...rest } = state.tree;
+      state.tree = rest;
+    },
+    updateTitle: (state, data) => {
+      const key = data.payload[0];
+      const title = data.payload[1];
+
+      state.tree[key] = { ...current(state).tree[key], title: title }
+
     }
   },
 });
 
-const { reducer } = paneSlice;
-export const { addWidget, removeWidget, draggedInto, exportDashboard, importDashboard } = paneSlice.actions;
+const { reducer } = dashboardSlice;
+export const { addWidget, removeWidget, draggedInto, exportDashboard, importDashboard, addEmptyTab, addNewTab, setActiveKey, removeTab, updateTitle } = dashboardSlice.actions;
 
 export default reducer;

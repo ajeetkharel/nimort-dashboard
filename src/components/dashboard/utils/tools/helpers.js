@@ -79,10 +79,10 @@ export function setSavedSizeOfPanes(parent) {
     if (isSplitter(pane)) {
       let comingPane = setSavedSizeOfPanes({...pane});
       let savedSize = Math.round(window.localStorage.getItem("SizeOf"+comingPane["key"]));
-      console.log("Saved size", savedSize);
       let tempPane = {...comingPane};
       tempPane["size"] = savedSize || comingPane["size"];
       tempPane["key"] = uuidv4();
+      console.log("TEHITE", tempPane);
       let tempPanes = [...parent.panes];
       tempPanes[idx] = tempPane;
       parent.panes = tempPanes;
@@ -90,7 +90,6 @@ export function setSavedSizeOfPanes(parent) {
     else {
       let savedSize = Math.round(window.localStorage.getItem("SizeOf"+pane["key"]));
       let tempPane = {...pane};
-      console.log("Saved size", savedSize);
       tempPane["size"] = savedSize || pane["size"];
       tempPane["key"] = uuidv4();
       let tempPanes = [...parent.panes];

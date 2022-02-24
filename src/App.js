@@ -1,17 +1,25 @@
-import { Button, Layout, Tabs } from "antd";
+import { Button, Input, Layout } from "antd";
 import { useSelector, useDispatch } from "react-redux";
-import { addWidget, exportDashboard, importDashboard } from "./rtk/dashboard/slices";
+import { addNewTab, addWidget, exportDashboard, importDashboard } from "./rtk/dashboard/slices";
 import "./App.css";
 import Dashboard from "./components/dashboard/Dashboard";
 import { useRef } from "react";
 import { uuidv4 } from "./components/dashboard/utils/tools/widgetGenerator";
+import { Tabs } from 'antd';
+import Reports from "./components/Reports";
+import Profiles from "./components/Profiles";
+import { DashboardType } from "./constants/dashboard_constants";
 
+const { TabPane } = Tabs;
 const Content = Layout;
 
 function App() {
   const dispatch = useDispatch();
-  const tree = useSelector((state) => state.dashboard.tree);
   const inputFile = useRef(null);
+  const titleRef = useRef(null);
+
+  const activeKey = useSelector((state) => state.reportDashboards.activeKey);
+
 
   function handleFileImportChange(event) {
     let reader = new FileReader();
@@ -22,35 +30,57 @@ function App() {
     reader.readAsText(event.target.files[0]);
   }
 
+
   return (
-    <div style={{ backgroundColor: "#ededed" }}>
-      <Content className="top-bar" key={1}>
+    <div style={{ height: "100%", boxSizing: "border-box" }}>
+      <Content className="top-bar">
         <h1 className="text-item">Reports</h1>
         <div style={{ marginTop: "10px", display: "flex", "justifyContent": "space-between" }}>
           <div style={{ marginRight: "10px" }}>
             <Button type="primary" onClick={() => dispatch(exportDashboard())}>
-              Export dashboard
+              Save dashboard
             </Button>
           </div>
           <div>
             <input type='file' id='file' ref={inputFile} style={{ display: 'none' }} accept=".json" onChange={handleFileImportChange} />
             <Button type="primary" onClick={() => inputFile.current.click()}>
-              Import dashboard
+              Open dashboard
             </Button>
           </div>
         </div>
         <hr style={{ width: "20%" }}></hr>
-        <div>
-          <Button type="primary" onClick={() => dispatch(addWidget({title: uuidv4()}))}>
-            Add Widget
-          </Button>
+        <div style={{ display: "flex" }}>
+          <div>
+            <Input ref={titleRef} />
+          </div>
+          <div>
+            <Button type="primary"
+              onClick={
+                () => {
+                  dispatch(addWidget([{ title: titleRef.current.state.value }, activeKey]))
+                }
+              }
+            >
+              Add Widget
+            </Button>
+          </div>
         </div>
       </Content>
 
-
-      <div style={{ height: "800px", margin: "5px" }} key={2}>
-        <Dashboard tree={tree} />
-      </div>
+      <Tabs
+        style={{
+          height: "100%",
+          boxSizing: "border-box"
+        }}
+        size="large"
+        defaultActiveKey="1">
+        <TabPane tab="Reports" key="1">
+          <Reports />
+        </TabPane>
+        <TabPane tab="Profiles" key="2">
+          <Profiles />
+        </TabPane>
+      </Tabs>
     </div>
   );
 }

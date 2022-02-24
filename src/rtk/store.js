@@ -1,8 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit"
-import dashboardReducer from "./dashboard/slices"
+import reportDashboardReducer from "./dashboard/slices"
 
 const reducer = {
-    dashboard: dashboardReducer
+    reportDashboards: reportDashboardReducer,
+    profileDashboards: null
 }
 
 const store = configureStore({

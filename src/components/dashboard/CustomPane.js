@@ -18,6 +18,8 @@ const CustomPane = React.memo((props) => {
     const dispatch = useDispatch();
 
     const [isInTBLR, setIsInTBLR] = useState([false, false, false, false]);
+    const [isMaximized, setIsMaximized] = useState(false);
+
     let dropDirection = "top";
 
     const [{ isDragging }, drag, preview] = useDrag(() => ({
@@ -110,14 +112,14 @@ const CustomPane = React.memo((props) => {
             ref={ref}
             id={config.key}
             role={"SplitPane"}
-            style={{ opacity, backgroundColor, height: "100%", width: "100%", position: "relative" }}
+            style={{ opacity, backgroundColor, overflowY: "auto", height: isMaximized ?  document.getElementById("reportDashboardTab1").clientHeight : "100%", width: isMaximized ? document.getElementById("reportDashboardTab1").clientWidth : "100%", position: isMaximized ? "absolute" : "relative", left: isMaximized? 0:"auto", top: isMaximized ? 0 + document.getElementById("reportDashboardTab1").offsetTop : "auto", zIndex: isMaximized ? "2" : "1" }}
         >
             <div style={{
                 gridTemplateColumns: "auto",
                 position: "absolute",
                 top: 0,
                 display: isOver & isInTBLR[0] || isInTBLR[1] ? "grid" : "none",
-                zIndex: "2",
+                zIndex: "3",
                 height: "100%",
                 width: "100%",
                 opacity: "0.5"
@@ -126,12 +128,12 @@ const CustomPane = React.memo((props) => {
                     border: "1px solid rgba(0, 0, 0, 0.8)",
                     opacity: isInTBLR[0] ? "1" : "0",
                     backgroundColor: "#2196F3",
-                }} class="grid-item">1</div>
+                }}>1</div>
                 <div style={{
                     border: "1px solid rgba(0, 0, 0, 0.8)",
                     opacity: isInTBLR[1] ? "1" : "0",
                     backgroundColor: "#2196F3",
-                }} class="grid-item">2</div>
+                }}>2</div>
             </div>
 
             <div style={{
@@ -139,7 +141,7 @@ const CustomPane = React.memo((props) => {
                 gridAutoFlow: "column",
                 position: "absolute",
                 top: 0,
-                zIndex: "2",
+                zIndex: "3",
                 display: isOver & isInTBLR[2] || isInTBLR[3] ? "grid" : "none",
                 height: "100%",
                 width: "100%",
@@ -149,12 +151,12 @@ const CustomPane = React.memo((props) => {
                     border: "1px solid rgba(0, 0, 0, 0.8)",
                     opacity: isInTBLR[2] ? "1" : "0",
                     backgroundColor: "#2196F3",
-                }} class="grid-item">1</div>
+                }}>1</div>
                 <div style={{
                     border: "1px solid rgba(0, 0, 0, 0.8)",
                     opacity: isInTBLR[3] ? "1" : "0",
                     backgroundColor: "#2196F3",
-                }} class="grid-item">2</div>
+                }}>2</div>
             </div>
 
 
@@ -177,6 +179,7 @@ const CustomPane = React.memo((props) => {
                                 type="text"
                                 size="small"
                                 key={`MaximizeButtonFor${config.key}`}
+                                onClick={() => setIsMaximized(!isMaximized)}
                                 primary="true"
                             ></Button>
                             <Button
