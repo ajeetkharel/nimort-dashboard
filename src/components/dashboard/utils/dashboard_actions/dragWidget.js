@@ -1,52 +1,95 @@
 import { replacePaneInTree } from "./addWidget";
 import { replacePanesMakeEmpty } from "./removeWidget";
 import { generateSplitter, generateWidget } from "../tools/widgetGenerator";
+import { updateSizeInLocalStorage } from "../tools/helpers";
 
-export default function drag_widget(tree, data, direction) {
-  let treeStructure;
-  let except;
-  let panes = data.payload;
+let HORIZONTAL = ['top', 'bottom'];
+// let VERTICAL = ['left', 'right'];
 
-  [treeStructure, except] = moveBothWidgetToNewSplitter(tree, panes, treeStructure);
+let FIRST_POSITIONS = ['top', 'left'];
+// let SECOND_POSITIONS = ['bottom', 'right']
 
-  treeStructure = removePreviousChildren(panes[0], tree, treeStructure, except)
 
-  return treeStructure;
-}
+export default function drag_widget(tree, drag_data) {
+  let dashTree;
 
-function moveBothWidgetToNewSplitter(tree, panes, treeStructure) {
-  console.log(`Dragged from ${panes[0]} to ${panes[1]}`);
-  let fromData = findPaneInDashboard([tree], panes[0], {});
-  let toData = findPaneInDashboard([tree], panes[1], {});
+  console.log(`Dragged from ${drag_data.from} to ${drag_data.to} direction ${drag_data.direction}`);
+
+  let fromData = findPaneInDashboard([tree], drag_data.from, {}, {});
+  let toData = findPaneInDashboard([tree], drag_data.to, {}, {});
 
   // toPane, parent, index
   let toPane = toData[0];
   let fromPane = fromData[0];
   let parent = toData[1];
   let index = toData[2];
-  let split = "vertical";
-  if (toPane["height"] > toPane["width"]) {
-    split = "horizontal";
+  let grandParent = toData[3];
+
+
+  let split = 'vertical';
+  if (HORIZONTAL.includes(drag_data.direction)) {
+    split = 'horizontal';
   }
-  let splitterObj = generateSplitter(
-    "",
-    toPane["height"],
-    toPane["width"],
-    split,
-    [toPane, fromPane]
-  );
 
-  let tempPanes = [...parent["panes"]];
-  tempPanes.splice(index, 1, splitterObj);
-  parent = { ...parent, panes: tempPanes };
+  let panes = [{ ...toPane, size: 50 }, { ...fromPane, size: 50 }]
 
+  if (FIRST_POSITIONS.includes(drag_data.direction)) {
+    panes = [{ ...fromPane, size: 50 }, { ...toPane, size: 50 }]
+  }
+
+  updateSizeInLocalStorage(toPane, 50);
+  updateSizeInLocalStorage(fromPane, 50);
+
+  let splitterObj;
+  if (parent.panes.indexOf(fromPane) != -1) {
+    parent = { ...parent, split: split, panes: panes }
+    splitterObj = parent;
+  }
+  else {
+    let splitterSize = Math.round(window.localStorage.getItem("SizeOf" + toPane["key"]) || toPane["size"]);
+    splitterObj = generateSplitter(
+      "",
+      100,
+      splitterSize,
+      split,
+      panes
+    );
+    updateSizeInLocalStorage(splitterObj, splitterSize);
+    let tempPanes = [...parent["panes"]];
+    tempPanes.splice(index, 1, splitterObj);
+
+    if (grandParent.panes && grandParent.panes.indexOf(fromPane) != -1) {
+      const parentSize = parent["size"] + fromPane["size"];
+      parent = { ...parent, size: parentSize, panes: tempPanes };
+      updateSizeInLocalStorage(parent, parentSize);
+    }
+    else {
+      parent = { ...parent, panes: tempPanes };
+    }
+  }
   if (tree["key"] == parent["key"]) {
-    treeStructure = parent;
+    dashTree = parent;
   } else {
     let parentPane = replacePaneInTree({ ...tree }, parent);
-    treeStructure = parentPane;
+    dashTree = parentPane;
   }
-  return [treeStructure, splitterObj.key];
+
+  let pane = generateWidget("", 0, "vertical", drag_data.from);
+  if (pane.key == dashTree.key) {
+    dashTree = {};
+  } else {
+    let parentPane = replacePanesMakeEmptyForDrag(
+      { ...dashTree },
+      pane,
+      splitterObj.key
+    );
+    if (parentPane.panes.length == 0) {
+      dashTree = {};
+    } else {
+      dashTree = removeLoneParents(parentPane);
+    }
+  }
+  return dashTree;
 }
 
 export function findPaneInDashboard(dictlist, value, parent, grandParent) {
@@ -66,25 +109,6 @@ export function findPaneInDashboard(dictlist, value, parent, grandParent) {
       }
     }
   }
-}
-
-function removePreviousChildren(key, tree, treeStructure, except) {
-  let pane = generateWidget("", 0, 0, "vertical", key);
-  if (pane.key == treeStructure.key) {
-    treeStructure = {};
-  } else {
-    let parentPane = replacePanesMakeEmpty(
-      { ...tree },
-      pane,
-      except
-    );
-    if (parentPane.panes.length == 0) {
-      treeStructure = {};
-    } else {
-      treeStructure = parentPane;
-    }
-  }
-  return treeStructure;
 }
 
 export function replacePanesMakeEmptyForDrag(parentPane, newPane, except = -1) {
@@ -118,8 +142,8 @@ export function removeLoneParents(parentPane) {
     let tempPane;
     let comingPane;
     if (pane.panes.length == 1) {
-      let savedSize = Math.round(window.localStorage.getItem("SizeOf"+pane["key"]));
-      tempPane = {...pane.panes[0], size: savedSize || pane["size"]};
+      let savedSize = Math.round(window.localStorage.getItem("SizeOf" + pane["key"]));
+      tempPane = { ...pane.panes[0], size: savedSize || pane["size"] };
       tempPanes = [...parentPane.panes];
       let index = parentPane.panes.indexOf(pane);
       tempPanes.splice(index, 1, tempPane);
