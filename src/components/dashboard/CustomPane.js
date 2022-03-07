@@ -1,6 +1,6 @@
 import AntTable from "./AntTable";
 import React, { useRef, useState } from "react";
-import { draggedInto } from "../../rtk/dashboard/slices";
+import { draggedInto } from "../../rtk/reportDashboard/slices";
 import { useDrag } from "react-dnd";
 import { useDrop } from "react-dnd";
 import { useDispatch } from "react-redux";
@@ -10,7 +10,7 @@ import {
     DragOutlined,
     ExpandAltOutlined,
 } from "@ant-design/icons/lib/icons";
-import { removeWidget } from "../../rtk/dashboard/slices";
+import { removeWidget } from "../../rtk/reportDashboard/slices";
 
 
 const CustomPane = React.memo((props) => {

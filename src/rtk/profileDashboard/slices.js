@@ -13,7 +13,7 @@ const initialState = {
 
 
 export const dashboardSlice = createSlice({
-  name: "dashboard",
+  name: "profileDashboard",
   initialState,
   reducers: {
     addWidget: (state = initialState, data) => {
@@ -29,8 +29,7 @@ export const dashboardSlice = createSlice({
     draggedInto: (state, data) => {
       const key = state.activeKey;
       const draggedData = drag_widget(current(state).tree[key].data, data.payload);
-      console.log(draggedData);
-      state.tree[key] = { ...current(state).tree[key], data: draggedData }
+      state.tree[key] = { ...current(state).tree[key], data: draggedData };
     },
     exportDashboard: (state) => {
       if (current(state).activeKey) {
@@ -48,33 +47,11 @@ export const dashboardSlice = createSlice({
       const dashName = uuidv4();
       state.tree[dashName] = { ...obj.payload };
       state.activeKey = dashName;
-    },
-    addNewTab: (state) => {
-      const dashName = uuidv4();
-      state.tree[dashName] = {
-        title: 'untitled',
-        data: {}
-      };
-      state.activeKey = dashName;
-    },
-    setActiveKey: (state, key) => {
-      state.activeKey = key.payload;
-    },
-    removeTab: (state, key) => {
-      const { [key.payload]: data, ...rest } = state.tree;
-      state.tree = rest;
-    },
-    updateTitle: (state, data) => {
-      const key = data.payload[0];
-      const title = data.payload[1];
-
-      state.tree[key] = { ...current(state).tree[key], title: title }
-
     }
   },
 });
 
 const { reducer } = dashboardSlice;
-export const { addWidget, removeWidget, draggedInto, exportDashboard, importDashboard, addEmptyTab, addNewTab, setActiveKey, removeTab, updateTitle } = dashboardSlice.actions;
+export const { addWidget, removeWidget, draggedInto, exportDashboard, importDashboard } = dashboardSlice.actions;
 
 export default reducer;

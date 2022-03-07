@@ -1,6 +1,6 @@
 import { Button, Input, Layout } from "antd";
 import { useSelector, useDispatch } from "react-redux";
-import { addNewTab, addWidget, exportDashboard, importDashboard } from "./rtk/dashboard/slices";
+import { addNewTab, addWidget, exportDashboard, importDashboard } from "./rtk/reportDashboard/slices";
 import "./App.css";
 import Dashboard from "./components/dashboard/Dashboard";
 import { useRef } from "react";
@@ -57,11 +57,11 @@ function App() {
             <Button type="primary"
               onClick={
                 () => {
-                  dispatch(addWidget([{ title: titleRef.current.state.value }, activeKey]))
+                  dispatch(addWidget([{ title: titleRef.current.state.value }, activeKey]));
                 }
               }
             >
-              Add Widget
+              Add Report
             </Button>
           </div>
         </div>
@@ -73,7 +73,7 @@ function App() {
           boxSizing: "border-box"
         }}
         size="large"
-        defaultActiveKey="1">
+        defaultActiveKey="2">
         <TabPane tab="Reports" key="1">
           <Reports />
         </TabPane>

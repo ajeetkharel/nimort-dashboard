@@ -93,7 +93,7 @@ export default function drag_widget(tree, drag_data) {
 }
 
 export function findPaneInDashboard(dictlist, value, parent, grandParent) {
-  let filteredPanes = dictlist.filter(x => x.key === value)
+  let filteredPanes = dictlist.filter(x => x.key === value);
   if (filteredPanes.length == 1) {
     return [filteredPanes[0], parent, dictlist.indexOf(filteredPanes[0]), grandParent];
   }

@@ -2,7 +2,7 @@ import { EditOutlined } from '@ant-design/icons/lib/icons';
 import { Input, Tabs } from 'antd';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addNewTab, removeTab, setActiveKey, updateTitle } from '../rtk/dashboard/slices';
+import { addNewTab, removeTab, setActiveKey, updateTitle } from '../rtk/reportDashboard/slices';
 import Dashboard from './dashboard/Dashboard';
 
 const { TabPane } = Tabs;
